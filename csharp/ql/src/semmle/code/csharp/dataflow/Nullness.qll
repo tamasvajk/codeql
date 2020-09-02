@@ -21,7 +21,6 @@ import csharp
 private import ControlFlow
 private import internal.CallableReturns
 private import semmle.code.csharp.commons.Assertions
-private import semmle.code.csharp.commons.ComparisonTest
 private import semmle.code.csharp.controlflow.Guards as G
 private import semmle.code.csharp.controlflow.Guards::AbstractValues
 private import semmle.code.csharp.dataflow.SSA
