@@ -123,13 +123,13 @@ class SignAnalysis
         var i = SomeValue();
         if (i < 0)
         {
-            System.Console.WriteLine(i); // strictly negative, not recognized
+            System.Console.WriteLine(i); // strictly negative
             return;
         }
 
-        System.Console.WriteLine(i); // positive, not recognized
+        System.Console.WriteLine(i); // positive
 
-        if (i != 0)
+        if (i != 0) // positive
         {
             System.Console.WriteLine(i); // strictly positive, not recognized
         }
@@ -150,16 +150,16 @@ class SignAnalysis
         var i = SomeValue();
         if (i > 0)
         {
-            System.Console.WriteLine(i); // strictly positive, not recognized
+            System.Console.WriteLine(i); // strictly positive
             return;
         }
     }
 
     void Test5c(int i)
     {
-        if (i < 0) // strictly negative, not recognized
+        if (i < 0)
         {
-            System.Console.WriteLine(i);
+            System.Console.WriteLine(i); // strictly negative
         }
     }
 
@@ -184,7 +184,7 @@ class SignAnalysis
         var i = SomeValue();
         if (i <= -1)
         {
-            System.Console.WriteLine(i); // strictly negative, not recognized
+            System.Console.WriteLine(i); // strictly negative
             return;
         }
 
@@ -201,7 +201,7 @@ class SignAnalysis
         var i = SomeValue();
         if (i >= 1)
         {
-            System.Console.WriteLine(i); // strictly positive, not recognized
+            System.Console.WriteLine(i); // strictly positive
             return;
         }
     }
@@ -210,7 +210,7 @@ class SignAnalysis
     {
         if (i <= -1)
         {
-            System.Console.WriteLine(i); // strictly negative, not recognized
+            System.Console.WriteLine(i); // strictly negative
         }
     }
 }
