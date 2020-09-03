@@ -325,7 +325,7 @@ private predicate posBound(Expr bound, Definition v, SsaReadPosition pos) {
  * Holds if `bound` is a bound for `v` at `pos` that needs to be negative in
  * order for `v` to be negative.
  */
-predicate negBound(Expr bound, Definition v, SsaReadPosition pos) {
+private predicate negBound(Expr bound, Definition v, SsaReadPosition pos) {
   lowerBound(bound, v, pos, _) or
   eqBound(bound, v, pos, true)
 }
@@ -347,6 +347,8 @@ private predicate posBoundOk(Expr bound, Definition v, SsaReadPosition pos) {
   upperBound(bound, v, pos, _) and TPos() = exprSign(bound)
   or
   eqBound(bound, v, pos, true) and TPos() = exprSign(bound)
+  or
+  eqBound(bound, v, pos, false)
 }
 
 /** Holds if `bound` allows `v` to be negative at `pos`. */
@@ -357,6 +359,8 @@ predicate negBoundOk(Expr bound, Definition v, SsaReadPosition pos) {
   lowerBound(bound, v, pos, _) and TNeg() = exprSign(bound)
   or
   eqBound(bound, v, pos, true) and TNeg() = exprSign(bound)
+  or
+  eqBound(bound, v, pos, false)
 }
 
 /** Holds if `bound` allows `v` to be zero at `pos`. */

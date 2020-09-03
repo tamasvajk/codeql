@@ -131,7 +131,7 @@ class SignAnalysis
 
         if (i != 0) // positive
         {
-            System.Console.WriteLine(i); // strictly positive, not recognized
+            System.Console.WriteLine(i); // strictly positive
         }
     }
 
