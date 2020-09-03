@@ -316,20 +316,18 @@ private predicate eqBound(Expr eqbound, Definition v, SsaReadPosition pos, boole
  * Holds if `bound` is a bound for `v` at `pos` that needs to be positive in
  * order for `v` to be positive.
  */
-private predicate posBound(Expr bound, Definition v, SsaReadPosition pos, boolean isStrict) {
-  lowerBound(bound, v, pos, isStrict)
-  or
-  eqBound(bound, v, pos, true) and isStrict = false
+private predicate posBound(Expr bound, Definition v, SsaReadPosition pos) {
+  upperBound(bound, v, pos, _) or
+  eqBound(bound, v, pos, true)
 }
 
 /**
  * Holds if `bound` is a bound for `v` at `pos` that needs to be negative in
  * order for `v` to be negative.
  */
-private predicate negBound(Expr bound, Definition v, SsaReadPosition pos, boolean isStrict) {
-  upperBound(bound, v, pos, isStrict)
-  or
-  eqBound(bound, v, pos, true) and isStrict = false
+private predicate negBound(Expr bound, Definition v, SsaReadPosition pos) {
+  lowerBound(bound, v, pos, _) or
+  eqBound(bound, v, pos, true)
 }
 
 /**
@@ -344,16 +342,12 @@ private predicate zeroBound(Expr bound, Definition v, SsaReadPosition pos) {
 
 /** Holds if `bound` allows `v` to be positive at `pos`. */
 private predicate posBoundOk(Expr bound, Definition v, SsaReadPosition pos) {
-  posBound(bound, v, pos, _) and TPos() = exprSign(bound)
-  or
-  posBound(bound, v, pos, true) and TZero() = exprSign(bound)
+  posBound(bound, v, pos) and TPos() = exprSign(bound)
 }
 
 /** Holds if `bound` allows `v` to be negative at `pos`. */
 private predicate negBoundOk(Expr bound, Definition v, SsaReadPosition pos) {
-  negBound(bound, v, pos, _) and TNeg() = exprSign(bound)
-  or
-  negBound(bound, v, pos, true) and TZero() = exprSign(bound)
+  negBound(bound, v, pos) and TNeg() = exprSign(bound)
 }
 
 /** Holds if `bound` allows `v` to be zero at `pos`. */
@@ -375,20 +369,21 @@ private predicate zeroBoundOk(Expr bound, Definition v, SsaReadPosition pos) {
  * Holds if there is a bound that might restrict whether `v` has the sign `s`
  * at `pos`.
  */
-predicate hasGuard(Definition v, SsaReadPosition pos, Sign s) {
-  s = TPos() and posBound(_, v, pos, _)
+private predicate hasGuard(Definition v, SsaReadPosition pos, Sign s) {
+  s = TPos() and posBound(_, v, pos)
   or
-  s = TNeg() and negBound(_, v, pos, _)
+  s = TNeg() and negBound(_, v, pos)
   or
   s = TZero() and zeroBound(_, v, pos)
 }
 
-// pragma[noinline]
-// private Sign guardedSsaSign(Definition v, SsaReadPosition pos) {
-//   //result = ssaDefSign(v) and
-//   pos.hasReadOfVar(v) and
-//   hasGuard(v, pos, result)
-// }
+pragma[noinline]
+private Sign guardedSsaSign(Definition v, SsaReadPosition pos) {
+  result = ssaDefSign(v) and
+  pos.hasReadOfVar(v) and
+  hasGuard(v, pos, result)
+}
+
 pragma[noinline]
 private Sign unguardedSsaSign(Definition v, SsaReadPosition pos) {
   result = ssaDefSign(v) and
@@ -398,10 +393,10 @@ private Sign unguardedSsaSign(Definition v, SsaReadPosition pos) {
 
 private Sign guardedSsaSignOk(Definition v, SsaReadPosition pos) {
   result = TPos() and
-  forex(Expr bound | posBound(bound, v, pos, _) | posBoundOk(bound, v, pos))
+  forex(Expr bound | posBound(bound, v, pos) | posBoundOk(bound, v, pos))
   or
   result = TNeg() and
-  forex(Expr bound | negBound(bound, v, pos, _) | negBoundOk(bound, v, pos))
+  forex(Expr bound | negBound(bound, v, pos) | negBoundOk(bound, v, pos))
   or
   result = TZero() and
   forex(Expr bound | zeroBound(bound, v, pos) | zeroBoundOk(bound, v, pos))
@@ -411,7 +406,7 @@ private Sign guardedSsaSignOk(Definition v, SsaReadPosition pos) {
 Sign ssaSign(Definition v, SsaReadPosition pos) {
   result = unguardedSsaSign(v, pos)
   or
-  //result = guardedSsaSign(v, pos) and
+  result = guardedSsaSign(v, pos) and
   result = guardedSsaSignOk(v, pos)
 }
 
