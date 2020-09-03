@@ -87,7 +87,11 @@
 | SignAnalysis.cs:116:35:116:35 | 2 | positive strictlyPositive |
 | SignAnalysis.cs:116:38:116:38 | 3 | positive strictlyPositive |
 | SignAnalysis.cs:120:60:120:63 | 1000 | positive strictlyPositive |
+| SignAnalysis.cs:126:38:126:38 | access to local variable i | negative strictlyNegative |
 | SignAnalysis.cs:141:18:141:18 | 1 | positive strictlyPositive |
+| SignAnalysis.cs:143:38:143:38 | access to local variable i | positive strictlyPositive |
+| SignAnalysis.cs:153:38:153:38 | access to local variable i | positive strictlyPositive |
+| SignAnalysis.cs:162:38:162:38 | access to parameter i | negative strictlyNegative |
 | SignAnalysis.cs:169:34:169:44 | access to property Length | positive |
 | SignAnalysis.cs:170:16:170:36 | 3 | positive strictlyPositive |
 | SignAnalysis.cs:170:28:170:28 | 1 | positive strictlyPositive |
