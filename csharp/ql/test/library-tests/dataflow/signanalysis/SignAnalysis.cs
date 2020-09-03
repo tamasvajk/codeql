@@ -123,15 +123,15 @@ class SignAnalysis
         var i = SomeValue();
         if (i < 0)
         {
-            System.Console.WriteLine(i);
+            System.Console.WriteLine(i); // strictly negative, not recognized
             return;
         }
 
-        System.Console.WriteLine(i); // positive, but not recognized
+        System.Console.WriteLine(i); // positive, not recognized
 
         if (i != 0)
         {
-            System.Console.WriteLine(i); // strictly positive, but not recognized
+            System.Console.WriteLine(i); // strictly positive, not recognized
         }
     }
 
@@ -150,14 +150,14 @@ class SignAnalysis
         var i = SomeValue();
         if (i > 0)
         {
-            System.Console.WriteLine(i);
+            System.Console.WriteLine(i); // strictly positive, not recognized
             return;
         }
     }
 
-    void Test6(int i)
+    void Test5c(int i)
     {
-        if (i < 0)
+        if (i < 0) // strictly negative, not recognized
         {
             System.Console.WriteLine(i);
         }
@@ -177,6 +177,41 @@ class SignAnalysis
 
         System.Console.WriteLine(int.MaxValue);
         System.Console.WriteLine(int.MinValue);
+    }
+
+    void Test8()
+    {
+        var i = SomeValue();
+        if (i <= -1)
+        {
+            System.Console.WriteLine(i); // strictly negative, not recognized
+            return;
+        }
+
+        System.Console.WriteLine(i); // positive, not recognized
+
+        if (i != 0)
+        {
+            System.Console.WriteLine(i); // strictly positive, not recognized
+        }
+    }
+
+    void Test8b()
+    {
+        var i = SomeValue();
+        if (i >= 1)
+        {
+            System.Console.WriteLine(i); // strictly positive, not recognized
+            return;
+        }
+    }
+
+    void Test8c(int i)
+    {
+        if (i <= -1)
+        {
+            System.Console.WriteLine(i); // strictly negative, not recognized
+        }
     }
 }
 
