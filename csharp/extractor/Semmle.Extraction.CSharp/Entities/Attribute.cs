@@ -5,61 +5,53 @@ using System.IO;
 
 namespace Semmle.Extraction.CSharp.Entities
 {
-    internal class Attribute : FreshEntity, IExpressionParentEntity
+    internal class Attribute : CachedEntity<AttributeSyntax>, IExpressionParentEntity
     {
         bool IExpressionParentEntity.IsTopLevelParent => true;
 
-        private readonly AttributeData attribute;
+        private readonly INamedTypeSymbol attributeClass;
         private readonly IEntity entity;
 
-        public Attribute(Context cx, AttributeData attribute, IEntity entity)
-            : base(cx)
+        private Attribute(Context cx, AttributeSyntax attributeSyntax, INamedTypeSymbol attributeClass, IEntity entity)
+            : base(cx, attributeSyntax)
         {
-            this.attribute = attribute;
+            this.attributeClass = attributeClass;
             this.entity = entity;
-            TryPopulate();
         }
 
-        protected override void Populate(TextWriter trapFile)
+        public override void WriteId(TextWriter trapFile)
         {
-            if (attribute.ApplicationSyntaxReference != null)
+            if (ReportingLocation?.IsInSource == true)
             {
-                // !! Extract attributes from assemblies.
-                // This is harder because the "expression" entities presume the
-                // existence of a syntax tree. This is not the case for compiled
-                // attributes.
-                var syntax = attribute.ApplicationSyntaxReference.GetSyntax() as AttributeSyntax;
-                ExtractAttribute(cx.TrapWriter.Writer, syntax, attribute.AttributeClass, entity);
+                trapFile.WriteSubId(Context.Create(ReportingLocation));
+                trapFile.Write(";attribute");
+            }
+            else
+            {
+                trapFile.Write('*');
             }
         }
 
-        public Attribute(Context cx, AttributeSyntax attribute, IEntity entity)
-            : base(cx)
+        public override void Populate(TextWriter trapFile)
         {
-            var info = cx.GetSymbolInfo(attribute);
-            ExtractAttribute(cx.TrapWriter.Writer, attribute, info.Symbol.ContainingType, entity);
-        }
-
-        private void ExtractAttribute(System.IO.TextWriter trapFile, AttributeSyntax syntax, ITypeSymbol attributeClass, IEntity entity)
-        {
-            var type = Type.Create(cx, attributeClass);
+            var type = Type.Create(Context, attributeClass);
             trapFile.attributes(this, type.TypeRef, entity);
 
-            trapFile.attribute_location(this, cx.Create(syntax.Name.GetLocation()));
+            trapFile.attribute_location(this, Context.Create(symbol.Name.GetLocation()));
 
-            if (cx.Extractor.OutputPath != null)
-                trapFile.attribute_location(this, Assembly.CreateOutputAssembly(cx));
+            if (Context.Extractor.OutputPath != null)
+                trapFile.attribute_location(this, Assembly.CreateOutputAssembly(Context));
 
-            TypeMention.Create(cx, syntax.Name, this, type);
+            TypeMention.Create(Context, symbol.Name, this, type);
 
-            if (syntax.ArgumentList != null)
+            if (symbol.ArgumentList != null)
             {
-                cx.PopulateLater(() =>
+                Context.PopulateLater(() =>
                 {
-                    var child = 0;
-                    foreach (var arg in syntax.ArgumentList.Arguments)
+                    int child = 0;
+                    foreach (var arg in symbol.ArgumentList.Arguments)
                     {
-                        var expr = Expression.Create(cx, arg.Expression, this, child++);
+                        var expr = Expression.Create(Context, arg.Expression, this, child++);
                         if (!(arg.NameEquals is null))
                         {
                             trapFile.expr_argument_name(expr, arg.NameEquals.Name.Identifier.Text);
@@ -69,13 +61,43 @@ namespace Semmle.Extraction.CSharp.Entities
             }
         }
 
+        private static void Create(Context cx, AttributeData attributeData, IEntity entity)
+        {
+            if (!(attributeData.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax syntax))
+            {
+                return;
+            }
+
+            var init = (syntax, attributeData.AttributeClass, entity);
+            AttributeFactory.Instance.CreateEntity(cx, init, init);
+        }
+
+        public static Attribute Create(Context cx, AttributeSyntax attributeSyntax, IEntity entity)
+        {
+            var type = cx.GetSymbolInfo(attributeSyntax).Symbol.ContainingType;
+            var init = (attributeSyntax, type, entity);
+            return AttributeFactory.Instance.CreateEntity(cx, init, init);
+        }
+
+        private class AttributeFactory : ICachedEntityFactory<(AttributeSyntax syntax, INamedTypeSymbol typeSymbol, IEntity receiver), Attribute>
+        {
+            public static readonly AttributeFactory Instance = new AttributeFactory();
+
+            public Attribute Create(Context cx, (AttributeSyntax syntax, INamedTypeSymbol typeSymbol, IEntity receiver) init) =>
+                new Attribute(cx, init.syntax, init.typeSymbol, init.receiver);
+        }
+
         public static void ExtractAttributes(Context cx, ISymbol symbol, IEntity entity)
         {
             foreach (var attribute in symbol.GetAttributes())
             {
-                new Attribute(cx, attribute, entity);
+                Create(cx, attribute, entity);
             }
         }
+
+        public override Microsoft.CodeAnalysis.Location ReportingLocation => symbol.Name.GetLocation();
+
+        public override bool NeedsPopulation => true;
 
         public override TrapStackBehaviour TrapStackBehaviour => TrapStackBehaviour.OptionalLabel;
     }

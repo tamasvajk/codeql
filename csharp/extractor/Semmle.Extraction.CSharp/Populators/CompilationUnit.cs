@@ -59,7 +59,7 @@ namespace Semmle.Extraction.CSharp.Populators
             var outputAssembly = Assembly.CreateOutputAssembly(cx);
             foreach (var attribute in node.Attributes)
             {
-                var ae = new Attribute(cx, attribute, outputAssembly);
+                var ae = Attribute.Create(cx, attribute, outputAssembly);
                 cx.BindComments(ae, attribute.GetLocation());
             }
         }
