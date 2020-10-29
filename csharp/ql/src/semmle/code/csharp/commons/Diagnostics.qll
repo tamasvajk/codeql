@@ -3,6 +3,11 @@
 import csharp
 import Compilation
 
+private predicate diagn2(ValueOrRefType s, Member m) {
+  s.getName() = "TaskAwaiter" and
+  s.getAMember() = m
+}
+
 /** A diagnostic emitted by a compilation, such as a compilation warning or an error. */
 class Diagnostic extends @diagnostic {
   /** Gets the compilation that generated this diagnostic. */

@@ -72,20 +72,6 @@ namespace Semmle.Extraction
             }
         }
 
-#if DEBUG_LABELS
-        private void CheckEntityHasUniqueLabel(string id, ICachedEntity entity)
-        {
-            if (idLabelCache.ContainsKey(id))
-            {
-                ExtractionError("Label collision for " + id, entity.Label.ToString(), Entities.Location.Create(this, entity.ReportingLocation), "", Severity.Warning);
-            }
-            else
-            {
-                idLabelCache[id] = entity;
-            }
-        }
-#endif
-
         public Label GetNewLabel() => new Label(GetNewId());
 
         public TEntity CreateEntity<TInit, TEntity>(ICachedEntityFactory<TInit, TEntity> factory, object cacheKey, TInit init)
@@ -123,12 +109,6 @@ namespace Semmle.Extraction
                 if (entity.NeedsPopulation)
                     Populate(init as ISymbol, entity);
 
-#if DEBUG_LABELS
-                using var id = new StringWriter();
-                entity.WriteQuotedId(id);
-                CheckEntityHasUniqueLabel(id.ToString(), entity);
-#endif
-
                 return entity;
             }
         }
@@ -163,10 +143,6 @@ namespace Semmle.Extraction
             entity.Label = GetNewLabel();
             entity.DefineFreshLabel(TrapWriter.Writer);
         }
-
-#if DEBUG_LABELS
-        private readonly Dictionary<string, ICachedEntity> idLabelCache = new Dictionary<string, ICachedEntity>();
-#endif
 
         private readonly IDictionary<object, ICachedEntity> objectEntityCache = new Dictionary<object, ICachedEntity>();
         private readonly IDictionary<ISymbol, ICachedEntity> symbolEntityCache = new Dictionary<ISymbol, ICachedEntity>(10000, SymbolEqualityComparer.IncludeNullability);

@@ -80,6 +80,12 @@ namespace Semmle.Extraction.CSharp
                 return ExitCode.Ok;
             }
 
+            System.Console.WriteLine("Starting...");
+
+            System.Threading.Thread.Sleep(20000);
+
+            System.Console.WriteLine("The wait is over");
+
             var canonicalPathCache = CanonicalPathCache.Create(logger, 1000);
             var pathTransformer = new PathTransformer(canonicalPathCache);
 
@@ -217,16 +223,26 @@ namespace Semmle.Extraction.CSharp
             yield return args.BaseDirectory;
 
             foreach (var r in args.ReferencePaths)
-                yield return r;
+                yield return ConvertToImplementationAssembly(r);
 
             var lib = System.Environment.GetEnvironmentVariable("LIB");
             if (lib != null)
                 yield return lib;
         }
 
+        private static string ConvertToImplementationAssembly(string r)
+        {
+            if (!r.StartsWith("/Users/tamasvajk/dev/tools/dotnet5/packs/Microsoft.NETCore.App.Ref/5.0.0-rc.2.20475.5/ref/net5.0"))
+                return r;
+
+            var name = new FileInfo(r).Name;
+
+            return Path.Combine("/Users/tamasvajk/dev/tools/dotnet5/shared/Microsoft.NETCore.App/5.0.0-rc.2.20475.5/", name);
+        }
+
         private static MetadataReference MakeReference(CommandLineReference reference, string path)
         {
-            return MetadataReference.CreateFromFile(path).WithProperties(reference.Properties);
+            return MetadataReference.CreateFromFile(ConvertToImplementationAssembly(path)).WithProperties(reference.Properties);
         }
 
         /// <summary>
@@ -238,7 +254,8 @@ namespace Semmle.Extraction.CSharp
         private static IEnumerable<Action> ResolveReferences(Microsoft.CodeAnalysis.CommandLineArguments args, Analyser analyser, CanonicalPathCache canonicalPathCache, BlockingCollection<MetadataReference> ret)
         {
             var referencePaths = new Lazy<string[]>(() => FixedReferencePaths(args).ToArray());
-            return args.MetadataReferences.Select<CommandLineReference, Action>(clref => () =>
+            var refs = args.MetadataReferences.Add(new CommandLineReference("/Users/tamasvajk/dev/tools/dotnet5/shared/Microsoft.NETCore.App/5.0.0-rc.2.20475.5/System.Private.CoreLib.dll", new MetadataReferenceProperties()));
+            return refs.Select<CommandLineReference, Action>(clref => () =>
             {
                 if (Path.IsPathRooted(clref.Reference))
                 {
