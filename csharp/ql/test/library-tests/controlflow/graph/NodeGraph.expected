@@ -319,7 +319,7 @@
 | Assert.cs:9:20:9:32 | ... ? ... : ... | Assert.cs:9:20:9:20 | access to parameter b | semmle.label | successor |
 | Assert.cs:9:24:9:27 | null | Assert.cs:9:16:9:32 | String s = ... | semmle.label | successor |
 | Assert.cs:9:31:9:32 | "" | Assert.cs:9:16:9:32 | String s = ... | semmle.label | successor |
-| Assert.cs:10:9:10:31 | [assertion failure] call to method Assert | Assert.cs:7:10:7:11 | exit M1 | semmle.label | exit |
+| Assert.cs:10:9:10:31 | [assertion failure] call to method Assert | Assert.cs:7:10:7:11 | exit M1 | semmle.label | exception(Exception) |
 | Assert.cs:10:9:10:31 | [assertion success] call to method Assert | Assert.cs:11:9:11:36 | ...; | semmle.label | successor |
 | Assert.cs:10:9:10:32 | ...; | Assert.cs:10:22:10:22 | access to local variable s | semmle.label | successor |
 | Assert.cs:10:22:10:22 | access to local variable s | Assert.cs:10:27:10:30 | null | semmle.label | successor |
@@ -576,8 +576,8 @@
 | Assert.cs:86:20:86:32 | ... ? ... : ... | Assert.cs:86:20:86:20 | access to parameter b | semmle.label | successor |
 | Assert.cs:86:24:86:27 | [b (line 84): true] null | Assert.cs:86:16:86:32 | [b (line 84): true] String s = ... | semmle.label | successor |
 | Assert.cs:86:31:86:32 | [b (line 84): false] "" | Assert.cs:86:16:86:32 | [b (line 84): false] String s = ... | semmle.label | successor |
-| Assert.cs:87:9:87:31 | [assertion failure, b (line 84): false] call to method Assert | Assert.cs:84:10:84:12 | exit M12 | semmle.label | exit |
-| Assert.cs:87:9:87:31 | [assertion failure, b (line 84): true] call to method Assert | Assert.cs:84:10:84:12 | exit M12 | semmle.label | exit |
+| Assert.cs:87:9:87:31 | [assertion failure, b (line 84): false] call to method Assert | Assert.cs:84:10:84:12 | exit M12 | semmle.label | exception(Exception) |
+| Assert.cs:87:9:87:31 | [assertion failure, b (line 84): true] call to method Assert | Assert.cs:84:10:84:12 | exit M12 | semmle.label | exception(Exception) |
 | Assert.cs:87:9:87:31 | [assertion success, b (line 84): false] call to method Assert | Assert.cs:88:9:88:36 | [b (line 84): false] ...; | semmle.label | successor |
 | Assert.cs:87:9:87:31 | [assertion success, b (line 84): true] call to method Assert | Assert.cs:88:9:88:36 | [b (line 84): true] ...; | semmle.label | successor |
 | Assert.cs:87:9:87:32 | [b (line 84): false] ...; | Assert.cs:87:22:87:22 | [b (line 84): false] access to local variable s | semmle.label | successor |
