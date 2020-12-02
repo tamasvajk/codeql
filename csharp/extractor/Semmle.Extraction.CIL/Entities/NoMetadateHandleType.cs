@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Semmle.Util;
 
 namespace Semmle.Extraction.CIL.Entities
 {
@@ -14,6 +15,10 @@ namespace Semmle.Extraction.CIL.Entities
         private readonly bool isContainerNamespace;
 
         private readonly Lazy<TypeTypeParameter[]> typeParams;
+
+        // Either null or notEmpty
+        private readonly Type[]? thisTypeArguments;
+        private readonly Type unboundGenericType;
 
         public NoMetadateHandleType(Context cx, string name) : base(cx)
         {
@@ -37,8 +42,22 @@ namespace Semmle.Extraction.CIL.Entities
             var firstBracketIndex = name.IndexOf('[');
             if (firstBracketIndex >= 0)
             {
+                // create types for arguments.
+                // this type is a constructed generic
+                // create non constructed one too.
                 throw new NotImplementedException();
                 // name = name.Substring(0, firstBracketIndex);
+
+                // adjust containing type which can also be a constructed generic
+
+                // thisTypeArguments = ;
+                // unboundGenericType = ;
+                // containerName = ;
+            }
+            else
+            {
+                thisTypeArguments = null;
+                unboundGenericType = this;
             }
 
             var lastPlusIndex = name.LastIndexOf('+');
@@ -101,8 +120,15 @@ namespace Semmle.Extraction.CIL.Entities
                 foreach (var tp in typeParams.Value)
                     yield return tp;
 
-                foreach (var c in base.Contents) // ?
+                foreach (var c in base.Contents)
                     yield return c;
+
+                var i = 0;
+                foreach (var type in ThisGenericArguments)
+                {
+                    yield return type;
+                    yield return Tuples.cil_type_argument(this, i++, type);
+                }
             }
         }
 
@@ -142,6 +168,12 @@ namespace Semmle.Extraction.CIL.Entities
         public override IEnumerable<Type> TypeParameters => typeParams.Value;
 
         public override IEnumerable<Type> MethodParameters => throw new InternalError("This type does not have method parameters");
+
+        public override IEnumerable<Type> ThisTypeArguments => thisTypeArguments.EnumerateNull();
+
+        public override IEnumerable<Type> ThisGenericArguments => thisTypeArguments.EnumerateNull();
+
+        public override Type SourceDeclaration => unboundGenericType;
 
         public override Type Construct(IEnumerable<Type> typeArguments)
         {
