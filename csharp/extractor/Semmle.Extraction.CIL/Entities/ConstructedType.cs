@@ -138,7 +138,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override void WriteAssemblyPrefix(TextWriter trapFile) => unboundGenericType.WriteAssemblyPrefix(trapFile);
 
-        public override IEnumerable<Type> TypeParameters => GenericArguments;
+        public override IEnumerable<Type> TypeParameters => Enumerable.Empty<Type>();
 
         public override IEnumerable<Type> MethodParameters => throw new NotImplementedException();
     }
