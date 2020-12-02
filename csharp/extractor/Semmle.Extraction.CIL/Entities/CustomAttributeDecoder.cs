@@ -32,6 +32,6 @@ namespace Semmle.Extraction.CIL.Entities
                 ? underlying.Value
                 : throw new NotImplementedException(); // we can't fall back to Int32, because the type returned here defines how many bytes are read from the stream.
 
-        public bool IsSystemType(Type type) => type is INamedType nt && nt.GetQualifiedName() == "System.Type";
+        public bool IsSystemType(Type type) => type.GetQualifiedName() == "System.Type";
     }
 }

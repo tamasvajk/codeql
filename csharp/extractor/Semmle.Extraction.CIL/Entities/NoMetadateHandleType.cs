@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Semmle.Extraction.CIL.Entities
 {
-    public sealed class NoMetadateHandleType : Type, INamedType
+    public sealed class NoMetadateHandleType : Type
     {
         private readonly string originalName;
         private readonly string name;
@@ -193,24 +193,6 @@ namespace Semmle.Extraction.CIL.Entities
             }
 
             trapFile.Write(name);
-        }
-
-        public string GetQualifiedName()
-        {
-            if (isContainerNamespace)
-            {
-                var qn = name;
-                var ns = Namespace;
-                while (ns != null && !string.IsNullOrWhiteSpace(ns.Name))
-                {
-                    qn = ns.Name + "." + qn;
-                    ns = ns.ParentNamespace;
-                }
-
-                return qn;
-            }
-
-            return ((NoMetadateHandleType)ContainingType!).GetQualifiedName() + "." + name;
         }
     }
 }

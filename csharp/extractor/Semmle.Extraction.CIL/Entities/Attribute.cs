@@ -64,13 +64,10 @@ namespace Semmle.Extraction.CIL.Entities
 
         private static string GetStringValue(Type type, object? value)
         {
-            if (type is INamedType nt &&
-                nt.GetQualifiedName() == "System.Type" &&
-                value is Type)
+            if (type.GetQualifiedName() == "System.Type" &&
+                value is Type t)
             {
-                return value is INamedType ntv
-                    ? ntv.GetQualifiedName()
-                    : (value.ToString() ?? "null");
+                return t.GetQualifiedName();
             }
 
             return value?.ToString() ?? "null";

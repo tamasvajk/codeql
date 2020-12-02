@@ -1,6 +1,5 @@
 ﻿using System.Reflection.Metadata;
 using System.Collections.Generic;
-using Semmle.Util;
 using System.IO;
 using System.Diagnostics.CodeAnalysis;
 
@@ -12,8 +11,6 @@ namespace Semmle.Extraction.CIL.Entities
     public abstract class Type : TypeContainer, IMember
     {
         public override string IdSuffix => ";cil-type";
-
-        public sealed override void WriteId(TextWriter trapFile) => WriteId(trapFile, false);
 
         /// <summary>
         /// Find the method in this type matching the name and signature.
@@ -57,6 +54,8 @@ namespace Semmle.Extraction.CIL.Entities
         /// </summary>
         public abstract void WriteAssemblyPrefix(TextWriter trapFile);
 
+        public sealed override void WriteId(TextWriter trapFile) => WriteId(trapFile, false);
+
         /// <summary>
         /// Writes the ID part to be used in a method ID.
         /// </summary>
@@ -67,12 +66,23 @@ namespace Semmle.Extraction.CIL.Entities
         /// </param>
         public abstract void WriteId(TextWriter trapFile, bool inContext);
 
-        public void GetId(TextWriter trapFile, bool inContext)
+        public void GetId(TextWriter trapFile, bool inContext) => WriteId(trapFile, inContext);
+
+        /// <summary>
+        /// Returns the friendly qualified name of types, such as ``"System.Collection.Generic`"`` or
+        /// `"System.Collection.Generic<System.Int32>"`.
+        ///
+        /// Note that method/type generic type parameters never show up in the returned name.
+        /// </summary>
+        public string GetQualifiedName()
         {
-            if (inContext)
-                WriteId(trapFile, true);
-            else
-                WriteId(trapFile);
+            var stream = new MemoryStream();
+            using var writer = new StreamWriter(stream);
+            GetId(writer, false);
+            writer.Flush();
+            stream.Seek(0, SeekOrigin.Begin);
+            var name = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+            return name.Substring(name.LastIndexOf(':') + 1);
         }
 
         protected Type(Context cx) : base(cx) { }
@@ -148,7 +158,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public void PrimitiveTypeId(TextWriter trapFile)
         {
-            trapFile.Write("builtin:");
+            trapFile.Write(PrimitiveType.Prefix);
             trapFile.Write(Name);
         }
 

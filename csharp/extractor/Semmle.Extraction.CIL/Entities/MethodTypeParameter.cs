@@ -11,7 +11,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override void WriteId(TextWriter trapFile, bool inContext)
         {
-            if (!(inContext && method == gc))
+            if (!inContext || method != gc)
             {
                 trapFile.WriteSubId(method);
             }

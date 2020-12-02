@@ -36,8 +36,10 @@ namespace Semmle.Extraction.CIL.Entities
         {
             elementType.GetId(trapFile, inContext);
             trapFile.Write('[');
-            for (var i = 1; i < rank; ++i)
-                trapFile.Write(',');
+            if (rank > 1)
+            {
+                trapFile.Write(new string(',', rank - 1));
+            }
             trapFile.Write(']');
         }
 

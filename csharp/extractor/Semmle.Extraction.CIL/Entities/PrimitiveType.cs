@@ -5,9 +5,11 @@ using System.IO;
 
 namespace Semmle.Extraction.CIL.Entities
 {
-    public sealed class PrimitiveType : Type, INamedType
+    public sealed class PrimitiveType : Type
     {
         private readonly PrimitiveTypeCode typeCode;
+        internal const string Prefix = "builtin::System.";
+
         public PrimitiveType(Context cx, PrimitiveTypeCode tc) : base(cx)
         {
             typeCode = tc;
@@ -25,7 +27,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override void WriteId(TextWriter trapFile, bool inContext)
         {
-            trapFile.Write("builtin:");
+            trapFile.Write(Prefix);
             trapFile.Write(Name);
         }
 
@@ -46,7 +48,5 @@ namespace Semmle.Extraction.CIL.Entities
         public override IEnumerable<Type> MethodParameters => throw new NotImplementedException();
 
         public override Type Construct(IEnumerable<Type> typeArguments) => throw new NotImplementedException();
-
-        public string GetQualifiedName() => $"System.{Name}";
     }
 }

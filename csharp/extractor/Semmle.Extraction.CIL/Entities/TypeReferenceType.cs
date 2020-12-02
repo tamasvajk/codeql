@@ -9,7 +9,7 @@ namespace Semmle.Extraction.CIL.Entities
     /// <summary>
     /// A type reference, to a type in a referenced assembly.
     /// </summary>
-    public sealed class TypeReferenceType : Type, INamedType
+    public sealed class TypeReferenceType : Type
     {
         private readonly TypeReferenceHandle handle;
         private readonly TypeReference tr;
@@ -150,32 +150,6 @@ namespace Semmle.Extraction.CIL.Entities
                 throw new InternalError("Mismatched type arguments");
 
             return Cx.Populate(new ConstructedType(Cx, this, typeArguments));
-        }
-
-        public string GetQualifiedName()
-        {
-            return GetQualifiedName(handle);
-        }
-
-        private string GetQualifiedName(TypeReferenceHandle typeHandle)
-        {
-            var type = Cx.MdReader.GetTypeReference(typeHandle);
-            var declaringTypeHandle = type.ResolutionScope.Kind == HandleKind.TypeReference
-                ? (TypeReferenceHandle)type.ResolutionScope
-                : default;
-            var name = Cx.MdReader.GetString(type.Name);
-
-            if (!declaringTypeHandle.IsNil)
-            {
-                return GetQualifiedName(declaringTypeHandle) + "." + name;
-            }
-
-            if (type.Namespace.IsNil)
-            {
-                return name;
-            }
-
-            return Cx.MdReader.GetString(type.Namespace) + "." + name;
         }
     }
 }

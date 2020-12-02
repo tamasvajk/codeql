@@ -10,7 +10,7 @@ namespace Semmle.Extraction.CIL.Entities
     /// <summary>
     /// A type defined in the current assembly.
     /// </summary>
-    public sealed class TypeDefinitionType : Type, INamedType
+    public sealed class TypeDefinitionType : Type
     {
         private readonly TypeDefinitionHandle handle;
         private readonly TypeDefinition td;
@@ -106,7 +106,7 @@ namespace Semmle.Extraction.CIL.Entities
             if (ct is null)
                 Cx.WriteAssemblyPrefix(trapFile);
             else if (IsPrimitiveType)
-                trapFile.Write("builtin:");
+                trapFile.Write(PrimitiveType.Prefix);
             else
                 ct.WriteAssemblyPrefix(trapFile);
         }
@@ -299,30 +299,6 @@ namespace Semmle.Extraction.CIL.Entities
             }
 
             throw new InternalError("Couldn't locate method in type");
-        }
-
-        public string GetQualifiedName()
-        {
-            return GetQualifiedName(handle);
-        }
-
-        private string GetQualifiedName(TypeDefinitionHandle typeHandle)
-        {
-            var type = Cx.MdReader.GetTypeDefinition(typeHandle);
-            var declaringTypeHandle = type.GetDeclaringType();
-            var name = Cx.MdReader.GetString(type.Name);
-
-            if (!declaringTypeHandle.IsNil)
-            {
-                return GetQualifiedName(declaringTypeHandle) + "." + name;
-            }
-
-            if (type.Namespace.IsNil)
-            {
-                return name;
-            }
-
-            return Cx.MdReader.GetString(type.Namespace) + "." + name;
         }
     }
 }
