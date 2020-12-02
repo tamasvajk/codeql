@@ -30,7 +30,7 @@ namespace Semmle.Extraction.CIL.Entities
         public PrimitiveTypeCode GetUnderlyingEnumType(Type type) =>
             type is TypeDefinitionType tdt && tdt.GetUnderlyingEnumType() is var underlying && underlying.HasValue
                 ? underlying.Value
-                : PrimitiveTypeCode.Int32; // Best guess. If we miss, BadFormatException will be thrown.
+                : throw new NotImplementedException(); // we can't fall back to Int32, because the type returned here defines how many bytes are read from the stream.
 
         public bool IsSystemType(Type type) => type is INamedType nt && nt.GetQualifiedName() == "System.Type";
     }
