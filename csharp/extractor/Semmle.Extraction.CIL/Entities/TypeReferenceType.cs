@@ -77,15 +77,6 @@ namespace Semmle.Extraction.CIL.Entities
             }
         }
 
-        public override IEnumerable<Type> ThisGenericArguments
-        {
-            get
-            {
-                foreach (var t in typeParams.Value)
-                    yield return t;
-            }
-        }
-
         public override Type? ContainingType
         {
             get
