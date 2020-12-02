@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Semmle.Extraction.CIL.Entities
 {
-    public sealed class PrimitiveType : Type
+    public sealed class PrimitiveType : Type, INamedType
     {
         private readonly PrimitiveTypeCode typeCode;
         public PrimitiveType(Context cx, PrimitiveTypeCode tc) : base(cx)
@@ -46,5 +46,7 @@ namespace Semmle.Extraction.CIL.Entities
         public override IEnumerable<Type> MethodParameters => throw new NotImplementedException();
 
         public override Type Construct(IEnumerable<Type> typeArguments) => throw new NotImplementedException();
+
+        public string GetQualifiedName() => $"System.{Name}";
     }
 }

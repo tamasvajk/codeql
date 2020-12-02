@@ -1,7 +1,5 @@
 using System;
-using Microsoft.CodeAnalysis;
 using System.Reflection.Metadata;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
@@ -12,9 +10,9 @@ namespace Semmle.Extraction.CIL.Entities
     /// <summary>
     /// A type defined in the current assembly.
     /// </summary>
-    public sealed class TypeDefinitionType : Type
+    public sealed class TypeDefinitionType : Type, INamedType
     {
-        private readonly Handle handle;
+        private readonly TypeDefinitionHandle handle;
         private readonly TypeDefinition td;
 
         public TypeDefinitionType(Context cx, TypeDefinitionHandle handle) : base(cx)
@@ -301,6 +299,30 @@ namespace Semmle.Extraction.CIL.Entities
             }
 
             throw new InternalError("Couldn't locate method in type");
+        }
+
+        public string GetQualifiedName()
+        {
+            return GetQualifiedName(handle);
+        }
+
+        private string GetQualifiedName(TypeDefinitionHandle typeHandle)
+        {
+            var type = Cx.MdReader.GetTypeDefinition(typeHandle);
+            var declaringTypeHandle = type.GetDeclaringType();
+            var name = Cx.MdReader.GetString(type.Name);
+
+            if (!declaringTypeHandle.IsNil)
+            {
+                return GetQualifiedName(declaringTypeHandle) + "." + name;
+            }
+
+            if (type.Namespace.IsNil)
+            {
+                return name;
+            }
+
+            return Cx.MdReader.GetString(type.Namespace) + "." + name;
         }
     }
 }

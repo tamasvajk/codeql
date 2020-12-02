@@ -14,7 +14,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public Type GetPrimitiveType(PrimitiveTypeCode typeCode) => cx.Create(typeCode);
 
-        public Type GetSystemType() => throw new NotImplementedException();
+        public Type GetSystemType() => new NoMetadateHandleType(cx, "System.Type");
 
         public Type GetSZArrayType(Type elementType) =>
             cx.Populate(new ArrayType(cx, elementType));
@@ -25,10 +25,13 @@ namespace Semmle.Extraction.CIL.Entities
         public Type GetTypeFromReference(MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind) =>
             (Type)cx.Create(handle);
 
-        public Type GetTypeFromSerializedName(string name) => throw new NotImplementedException();
+        public Type GetTypeFromSerializedName(string name) => new NoMetadateHandleType(cx, name);
 
-        public PrimitiveTypeCode GetUnderlyingEnumType(Type type) => throw new NotImplementedException();
+        public PrimitiveTypeCode GetUnderlyingEnumType(Type type) =>
+            type is TypeDefinitionType tdt && tdt.GetUnderlyingEnumType() is var underlying && underlying.HasValue
+                ? underlying.Value
+                : PrimitiveTypeCode.Int32; // Best guess. If we miss, BadFormatException will be thrown.
 
-        public bool IsSystemType(Type type) => type is PrimitiveType; // ??
+        public bool IsSystemType(Type type) => type is INamedType nt && nt.GetQualifiedName() == "System.Type";
     }
 }
