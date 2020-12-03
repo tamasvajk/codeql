@@ -15,8 +15,11 @@ namespace Semmle.Extraction.CIL.Entities
         private readonly TypeReference tr;
         private readonly Lazy<TypeTypeParameter[]> typeParams;
 
+        private readonly NamedTypeIdWriter idWriter;
+
         public TypeReferenceType(Context cx, TypeReferenceHandle handle) : base(cx)
         {
+            idWriter = new NamedTypeIdWriter(this);
             this.typeParams = new Lazy<TypeTypeParameter[]>(MakeTypeParameters);
             this.handle = handle;
             this.tr = cx.MdReader.GetTypeReference(handle);
@@ -93,9 +96,9 @@ namespace Semmle.Extraction.CIL.Entities
         {
             switch (tr.ResolutionScope.Kind)
             {
-                case HandleKind.TypeReference:
-                    ContainingType!.WriteAssemblyPrefix(trapFile);
-                    break;
+                // case HandleKind.TypeReference:
+                //     ContainingType!.WriteAssemblyPrefix(trapFile);
+                //     break;
                 case HandleKind.AssemblyReference:
                     var assemblyDef = Cx.MdReader.GetAssemblyReference((AssemblyReferenceHandle)tr.ResolutionScope);
                     trapFile.Write(Cx.GetString(assemblyDef.Name));
@@ -104,7 +107,7 @@ namespace Semmle.Extraction.CIL.Entities
                     trapFile.Write("::");
                     break;
                 default:
-                    Cx.WriteAssemblyPrefix(trapFile);
+                    //Cx.WriteAssemblyPrefix(trapFile);
                     break;
             }
         }
@@ -115,33 +118,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override void WriteId(TextWriter trapFile, bool inContext)
         {
-            if (IsPrimitiveType)
-            {
-                PrimitiveTypeId(trapFile);
-                return;
-            }
-
-            var ct = ContainingType;
-            if (ct != null)
-            {
-                ct.GetId(trapFile, inContext);
-                trapFile.Write('.');
-            }
-            else
-            {
-                if (tr.ResolutionScope.Kind == HandleKind.AssemblyReference)
-                {
-                    WriteAssemblyPrefix(trapFile);
-                }
-
-                if (!Namespace.IsGlobalNamespace)
-                {
-                    Namespace.WriteId(trapFile);
-                    trapFile.Write('.');
-                }
-            }
-
-            trapFile.Write(Cx.GetString(tr.Name));
+            idWriter.WriteId(trapFile, inContext);
         }
 
         public override Type Construct(IEnumerable<Type> typeArguments)

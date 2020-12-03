@@ -20,8 +20,11 @@ namespace Semmle.Extraction.CIL.Entities
         private readonly Type[]? thisTypeArguments;
         private readonly Type unboundGenericType;
 
+        private readonly NamedTypeIdWriter idWriter;
+
         public NoMetadateHandleType(Context cx, string name) : base(cx)
         {
+            idWriter = new NamedTypeIdWriter(this);
             originalName = name;
 
             // N1.N2.T1`3+T2`1[T3,[T4, Assembly1, Version=...],T5,T6], Assembly2, Version=...
@@ -198,33 +201,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override void WriteId(TextWriter trapFile, bool inContext)
         {
-            if (IsPrimitiveType)
-            {
-                PrimitiveTypeId(trapFile);
-                return;
-            }
-
-            var ct = ContainingType;
-            if (ct != null)
-            {
-                ct.GetId(trapFile, inContext);
-                trapFile.Write('.');
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(assemblyName))
-                {
-                    WriteAssemblyPrefix(trapFile);
-                }
-
-                if (!Namespace!.IsGlobalNamespace)
-                {
-                    Namespace.WriteId(trapFile);
-                    trapFile.Write('.');
-                }
-            }
-
-            trapFile.Write(name);
+            idWriter.WriteId(trapFile, inContext);
         }
     }
 }

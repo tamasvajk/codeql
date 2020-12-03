@@ -17,6 +17,8 @@ namespace Semmle.Extraction.CIL.Entities
         // Either null or notEmpty
         private readonly Type[]? thisTypeArguments;
 
+        private readonly NamedTypeIdWriter idWriter;
+
         public override IEnumerable<Type> ThisTypeArguments => thisTypeArguments.EnumerateNull();
 
         public override IEnumerable<Type> ThisGenericArguments => thisTypeArguments.EnumerateNull();
@@ -41,6 +43,8 @@ namespace Semmle.Extraction.CIL.Entities
 
         public ConstructedType(Context cx, Type unboundType, IEnumerable<Type> typeArguments) : base(cx)
         {
+            idWriter = new NamedTypeIdWriter(this);
+
             var suppliedArgs = typeArguments.Count();
             if (suppliedArgs != unboundType.TotalTypeParametersCheck)
                 throw new InternalError("Unexpected number of type arguments in ConstructedType");
@@ -106,34 +110,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override void WriteId(TextWriter trapFile, bool inContext)
         {
-            if (ContainingType != null)
-            {
-                ContainingType.GetId(trapFile, inContext);
-                trapFile.Write('.');
-            }
-            else
-            {
-                WriteAssemblyPrefix(trapFile);
-
-                if (!Namespace.IsGlobalNamespace)
-                {
-                    Namespace.WriteId(trapFile);
-                    trapFile.Write('.');
-                }
-            }
-            trapFile.Write(unboundGenericType.Name);
-
-            if (thisTypeArguments != null && thisTypeArguments.Any())
-            {
-                trapFile.Write('<');
-                var index = 0;
-                foreach (var t in thisTypeArguments)
-                {
-                    trapFile.WriteSeparator(",", ref index);
-                    t.WriteId(trapFile);
-                }
-                trapFile.Write('>');
-            }
+            idWriter.WriteId(trapFile, inContext);
         }
 
         public override void WriteAssemblyPrefix(TextWriter trapFile) => unboundGenericType.WriteAssemblyPrefix(trapFile);

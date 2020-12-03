@@ -156,10 +156,10 @@ namespace Semmle.Extraction.CIL.Entities
 
         public virtual Type SourceDeclaration => this;
 
-        public void PrimitiveTypeId(TextWriter trapFile)
+        public static void WritePrimitiveTypeId(TextWriter trapFile, string name)
         {
             trapFile.Write(PrimitiveType.Prefix);
-            trapFile.Write(Name);
+            trapFile.Write(name);
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace Semmle.Extraction.CIL.Entities
             return false;
         }
 
-        protected bool IsPrimitiveType => TryGetPrimitiveTypeCode(out _);
+        protected internal bool IsPrimitiveType => TryGetPrimitiveTypeCode(out _);
 
         public static Type DecodeType(GenericContext gc, TypeSpecificationHandle handle) =>
             gc.Cx.MdReader.GetTypeSpecification(handle).DecodeSignature(gc.Cx.TypeSignatureDecoder, gc);

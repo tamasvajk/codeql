@@ -27,8 +27,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override void WriteId(TextWriter trapFile, bool inContext)
         {
-            trapFile.Write(Prefix);
-            trapFile.Write(Name);
+            Type.WritePrimitiveTypeId(trapFile, Name);
         }
 
         public override string Name => typeCode.Id();
