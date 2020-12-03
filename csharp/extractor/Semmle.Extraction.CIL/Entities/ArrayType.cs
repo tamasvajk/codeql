@@ -45,11 +45,11 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override string Name => elementType.Name + "[]";
 
-        public override Namespace Namespace => Cx.SystemNamespace;
+        public override Namespace ContainingNamespace => Cx.SystemNamespace;
 
         public override Type? ContainingType => null;
 
-        public override int ThisTypeParameters => elementType.ThisTypeParameters;
+        public override int ThisTypeParameterCount => elementType.ThisTypeParameterCount;
 
         public override CilTypeKind Kind => CilTypeKind.Array;
 
@@ -70,10 +70,6 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override void WriteAssemblyPrefix(TextWriter trapFile) => elementType.WriteAssemblyPrefix(trapFile);
 
-        public override IEnumerable<Type> GenericArguments => elementType.GenericArguments;
-
         public override IEnumerable<Type> TypeParameters => elementType.TypeParameters;
-
-        public override IEnumerable<Type> MethodParameters => throw new NotImplementedException();
     }
 }

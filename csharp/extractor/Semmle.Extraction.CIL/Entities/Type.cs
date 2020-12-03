@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics.CodeAnalysis;
+using System;
 
 namespace Semmle.Extraction.CIL.Entities
 {
@@ -10,7 +11,9 @@ namespace Semmle.Extraction.CIL.Entities
     /// </summary>
     public abstract class Type : TypeContainer, IMember
     {
-        public override string IdSuffix => ";cil-type";
+        protected Type(Context cx) : base(cx) { }
+
+        public sealed override string IdSuffix => ";cil-type";
 
         /// <summary>
         /// Find the method in this type matching the name and signature.
@@ -24,29 +27,6 @@ namespace Semmle.Extraction.CIL.Entities
         internal virtual Method? LookupMethod(StringHandle methodName, BlobHandle signature)
         {
             return null;
-        }
-
-        public IEnumerable<Type> TypeArguments
-        {
-            get
-            {
-                if (ContainingType != null)
-                {
-                    foreach (var t in ContainingType.TypeArguments)
-                        yield return t;
-                }
-                foreach (var t in ThisTypeArguments)
-                    yield return t;
-
-            }
-        }
-
-        public virtual IEnumerable<Type> ThisTypeArguments
-        {
-            get
-            {
-                yield break;
-            }
         }
 
         /// <summary>
@@ -76,23 +56,14 @@ namespace Semmle.Extraction.CIL.Entities
         /// </summary>
         public string GetQualifiedName()
         {
-            var stream = new MemoryStream();
-            using var writer = new StreamWriter(stream);
+            using var writer = new StringWriter();
             GetId(writer, false);
             writer.Flush();
-            stream.Seek(0, SeekOrigin.Begin);
-            var name = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+            var name = writer.ToString();
             return name.Substring(name.LastIndexOf(':') + 1);
         }
 
-        protected Type(Context cx) : base(cx) { }
-
-        public abstract CilTypeKind Kind
-        {
-            get;
-        }
-
-        public virtual TypeContainer Parent => (TypeContainer?)ContainingType ?? Namespace!;
+        public abstract CilTypeKind Kind { get; }
 
         public override IEnumerable<IExtractionProduct> Contents
         {
@@ -102,58 +73,41 @@ namespace Semmle.Extraction.CIL.Entities
             }
         }
 
-        /// <summary>
-        /// Whether this type is visible outside the current assembly.
-        /// </summary>
-        public virtual bool IsVisible => true;
-
         public abstract string Name { get; }
 
-        public abstract Namespace? Namespace { get; }
+        public abstract Namespace? ContainingNamespace { get; }
 
         public abstract Type? ContainingType { get; }
+
+        public virtual TypeContainer Parent => (TypeContainer?)ContainingType ?? ContainingNamespace!;
 
         public abstract Type Construct(IEnumerable<Type> typeArguments);
 
         /// <summary>
-        /// The number of type arguments, or 0 if this isn't generic.
-        /// The containing type may also have type arguments.
+        /// The number of type parameters, or 0 if this isn't generic.
+        /// The containing type may also have type parameters.
         /// </summary>
-        public abstract int ThisTypeParameters { get; }
+        public abstract int ThisTypeParameterCount { get; }
 
         /// <summary>
         /// The total number of type parameters (including parent types).
         /// This is used for internal consistency checking only.
         /// </summary>
-        public int TotalTypeParametersCheck =>
-            ContainingType == null ? ThisTypeParameters : ThisTypeParameters + ContainingType.TotalTypeParametersCheck;
+        public int TotalTypeParametersCount => ContainingType == null
+            ? ThisTypeParameterCount
+            : ThisTypeParameterCount + ContainingType.TotalTypeParametersCount;
 
         /// <summary>
         /// Returns all bound/unbound generic arguments
         /// of a constructed/unbound generic type.
         /// </summary>
-        public virtual IEnumerable<Type> ThisGenericArguments
+        public virtual IEnumerable<Type> ThisTypeArguments
         {
             get
             {
                 yield break;
             }
         }
-
-        public virtual IEnumerable<Type> GenericArguments
-        {
-            get
-            {
-                if (ContainingType != null)
-                {
-                    foreach (var t in ContainingType.GenericArguments)
-                        yield return t;
-                }
-                foreach (var t in ThisGenericArguments)
-                    yield return t;
-            }
-        }
-
         public virtual Type SourceDeclaration => this;
 
         public static void WritePrimitiveTypeId(TextWriter trapFile, string name)
@@ -161,6 +115,28 @@ namespace Semmle.Extraction.CIL.Entities
             trapFile.Write(PrimitiveType.Prefix);
             trapFile.Write(name);
         }
+
+        private static readonly Dictionary<string, PrimitiveTypeCode> primitiveTypeCodeMapping = new Dictionary<string, PrimitiveTypeCode>
+        {
+            {"Boolean", PrimitiveTypeCode.Boolean},
+            {"Object", PrimitiveTypeCode.Object},
+            {"Byte", PrimitiveTypeCode.Byte},
+            {"SByte", PrimitiveTypeCode.SByte},
+            {"Int16", PrimitiveTypeCode.Int16},
+            {"UInt16", PrimitiveTypeCode.UInt16},
+            {"Int32", PrimitiveTypeCode.Int32},
+            {"UInt32", PrimitiveTypeCode.UInt32},
+            {"Int64", PrimitiveTypeCode.Int64},
+            {"UInt64", PrimitiveTypeCode.UInt64},
+            {"Single", PrimitiveTypeCode.Single},
+            {"Double", PrimitiveTypeCode.Double},
+            {"String", PrimitiveTypeCode.String},
+            {"Void", PrimitiveTypeCode.Void},
+            {"IntPtr", PrimitiveTypeCode.IntPtr},
+            {"UIntPtr", PrimitiveTypeCode.UIntPtr},
+            {"Char", PrimitiveTypeCode.Char},
+            {"TypedReference", PrimitiveTypeCode.TypedReference}
+        };
 
         /// <summary>
         /// Gets the primitive type corresponding to this type, if possible.
@@ -181,72 +157,21 @@ namespace Semmle.Extraction.CIL.Entities
 
         private bool TryGetPrimitiveTypeCode(out PrimitiveTypeCode code)
         {
-            if (ContainingType == null && Namespace?.Name == Cx.SystemNamespace.Name)
+            if (ContainingType == null &&
+                ContainingNamespace?.Name == Cx.SystemNamespace.Name &&
+                primitiveTypeCodeMapping.ContainsKey(Name))
             {
-                switch (Name)
-                {
-                    case "Boolean":
-                        code = PrimitiveTypeCode.Boolean;
-                        return true;
-                    case "Object":
-                        code = PrimitiveTypeCode.Object;
-                        return true;
-                    case "Byte":
-                        code = PrimitiveTypeCode.Byte;
-                        return true;
-                    case "SByte":
-                        code = PrimitiveTypeCode.SByte;
-                        return true;
-                    case "Int16":
-                        code = PrimitiveTypeCode.Int16;
-                        return true;
-                    case "UInt16":
-                        code = PrimitiveTypeCode.UInt16;
-                        return true;
-                    case "Int32":
-                        code = PrimitiveTypeCode.Int32;
-                        return true;
-                    case "UInt32":
-                        code = PrimitiveTypeCode.UInt32;
-                        return true;
-                    case "Int64":
-                        code = PrimitiveTypeCode.Int64;
-                        return true;
-                    case "UInt64":
-                        code = PrimitiveTypeCode.UInt64;
-                        return true;
-                    case "Single":
-                        code = PrimitiveTypeCode.Single;
-                        return true;
-                    case "Double":
-                        code = PrimitiveTypeCode.Double;
-                        return true;
-                    case "String":
-                        code = PrimitiveTypeCode.String;
-                        return true;
-                    case "Void":
-                        code = PrimitiveTypeCode.Void;
-                        return true;
-                    case "IntPtr":
-                        code = PrimitiveTypeCode.IntPtr;
-                        return true;
-                    case "UIntPtr":
-                        code = PrimitiveTypeCode.UIntPtr;
-                        return true;
-                    case "Char":
-                        code = PrimitiveTypeCode.Char;
-                        return true;
-                    case "TypedReference":
-                        code = PrimitiveTypeCode.TypedReference;
-                        return true;
-                }
+                code = primitiveTypeCodeMapping[Name];
+                return true;
             }
 
-            code = default(PrimitiveTypeCode);
+            code = default;
             return false;
         }
 
         protected internal bool IsPrimitiveType => TryGetPrimitiveTypeCode(out _);
+
+        public override IEnumerable<Type> MethodParameters => throw new InternalError("Types have no generic method parameters");
 
         public static Type DecodeType(GenericContext gc, TypeSpecificationHandle handle) =>
             gc.Cx.MdReader.GetTypeSpecification(handle).DecodeSignature(gc.Cx.TypeSignatureDecoder, gc);

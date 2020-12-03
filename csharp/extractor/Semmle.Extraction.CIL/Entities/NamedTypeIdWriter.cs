@@ -30,7 +30,7 @@ namespace Semmle.Extraction.CIL.Entities
             {
                 type.WriteAssemblyPrefix(trapFile);
 
-                var ns = type.Namespace!;
+                var ns = type.ContainingNamespace!;
                 if (!ns.IsGlobalNamespace)
                 {
                     ns.WriteId(trapFile);
@@ -52,10 +52,10 @@ namespace Semmle.Extraction.CIL.Entities
                 }
                 trapFile.Write('>');
             }
-            else if (type.ThisTypeParameters > 0)
+            else if (type.ThisTypeParameterCount > 0)
             {
                 trapFile.Write('`');
-                trapFile.Write(type.ThisTypeParameters);
+                trapFile.Write(type.ThisTypeParameterCount);
             }
         }
     }

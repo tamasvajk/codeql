@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Semmle.Util;
 
@@ -86,11 +87,11 @@ namespace Semmle.Extraction.CIL.Entities
             }
 
             this.name = name;
-            this.typeParams = new Lazy<TypeTypeParameter[]>(MakeTypeParameters);
+            this.typeParams = new Lazy<TypeTypeParameter[]>(GenericsHelper.MakeTypeParameters(this, ThisTypeParameterCount));
 
             if (isContainerNamespace)
             {
-                cx.Populate(Namespace);
+                cx.Populate(ContainingNamespace);
             }
 
             cx.Populate(this);
@@ -98,22 +99,12 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override bool Equals(object? obj)
         {
-            return obj is NoMetadateHandleType t && name.Equals(t.name, StringComparison.Ordinal);
+            return obj is NoMetadateHandleType t && originalName.Equals(t.originalName, StringComparison.Ordinal);
         }
 
         public override int GetHashCode()
         {
-            return name.GetHashCode(StringComparison.Ordinal);
-        }
-
-        private TypeTypeParameter[] MakeTypeParameters()
-        {
-            var newTypeParams = new TypeTypeParameter[ThisTypeParameters];
-            for (var i = 0; i < newTypeParams.Length; ++i)
-            {
-                newTypeParams[i] = new TypeTypeParameter(this, this, i);
-            }
-            return newTypeParams;
+            return originalName.GetHashCode(StringComparison.Ordinal);
         }
 
         public override IEnumerable<IExtractionProduct> Contents
@@ -127,7 +118,7 @@ namespace Semmle.Extraction.CIL.Entities
                     yield return c;
 
                 var i = 0;
-                foreach (var type in ThisGenericArguments)
+                foreach (var type in ThisTypeArguments)
                 {
                     yield return type;
                     yield return Tuples.cil_type_argument(this, i++, type);
@@ -137,16 +128,9 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override CilTypeKind Kind => CilTypeKind.ValueOrRefType;
 
-        public override string Name
-        {
-            get
-            {
-                var tick = name.IndexOf('`');
-                return tick == -1 ? name : name.Substring(0, tick);
-            }
-        }
+        public override string Name => GenericsHelper.GetNonGenericName(name);
 
-        public override Namespace? Namespace => isContainerNamespace
+        public override Namespace? ContainingNamespace => isContainerNamespace
             ? new Namespace(Cx, containerName)
             : null;
 
@@ -158,28 +142,19 @@ namespace Semmle.Extraction.CIL.Entities
                     ? containerName
                     : containerName + ", " + assemblyName);
 
-        public override int ThisTypeParameters
-        {
-            get
-            {
-                // Parse the name
-                var tick = name.IndexOf('`');
-                return tick == -1 ? 0 : int.Parse(name.Substring(tick + 1));
-            }
-        }
+        public override int ThisTypeParameterCount => GenericsHelper.GetGenericTypeParameterCount(name);
 
         public override IEnumerable<Type> TypeParameters => typeParams.Value;
 
-        public override IEnumerable<Type> MethodParameters => throw new InternalError("This type does not have method parameters");
-
         public override IEnumerable<Type> ThisTypeArguments => thisTypeArguments.EnumerateNull();
-
-        public override IEnumerable<Type> ThisGenericArguments => thisTypeArguments.EnumerateNull();
 
         public override Type SourceDeclaration => unboundGenericType;
 
         public override Type Construct(IEnumerable<Type> typeArguments)
         {
+            if (TotalTypeParametersCount != typeArguments.Count())
+                throw new InternalError("Mismatched type arguments");
+
             return Cx.Populate(new ConstructedType(Cx, this, typeArguments));
         }
 

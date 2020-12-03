@@ -19,8 +19,8 @@ namespace Semmle.Extraction.CIL.Entities
 
         public TypeReferenceType(Context cx, TypeReferenceHandle handle) : base(cx)
         {
-            idWriter = new NamedTypeIdWriter(this);
-            this.typeParams = new Lazy<TypeTypeParameter[]>(MakeTypeParameters);
+            this.idWriter = new NamedTypeIdWriter(this);
+            this.typeParams = new Lazy<TypeTypeParameter[]>(GenericsHelper.MakeTypeParameters(this, ThisTypeParameterCount));
             this.handle = handle;
             this.tr = cx.MdReader.GetTypeReference(handle);
         }
@@ -30,20 +30,7 @@ namespace Semmle.Extraction.CIL.Entities
             return obj is TypeReferenceType t && handle.Equals(t.handle);
         }
 
-        public override int GetHashCode()
-        {
-            return handle.GetHashCode();
-        }
-
-        private TypeTypeParameter[] MakeTypeParameters()
-        {
-            var newTypeParams = new TypeTypeParameter[ThisTypeParameters];
-            for (var i = 0; i < newTypeParams.Length; ++i)
-            {
-                newTypeParams[i] = new TypeTypeParameter(this, this, i);
-            }
-            return newTypeParams;
-        }
+        public override int GetHashCode() => handle.GetHashCode();
 
         public override IEnumerable<IExtractionProduct> Contents
         {
@@ -57,36 +44,19 @@ namespace Semmle.Extraction.CIL.Entities
             }
         }
 
-        public override string Name
-        {
-            get
-            {
-                var name = Cx.GetString(tr.Name);
-                var tick = name.IndexOf('`');
-                return tick == -1 ? name : name.Substring(0, tick);
-            }
-        }
+        public override string Name => GenericsHelper.GetNonGenericName(tr.Name, Cx.MdReader);
 
-        public override Namespace Namespace => Cx.CreateNamespace(tr.Namespace);
+        public override Namespace ContainingNamespace => Cx.CreateNamespace(tr.Namespace);
 
-        public override int ThisTypeParameters
-        {
-            get
-            {
-                // Parse the name
-                var name = Cx.GetString(tr.Name);
-                var tick = name.IndexOf('`');
-                return tick == -1 ? 0 : int.Parse(name.Substring(tick + 1));
-            }
-        }
+        public override int ThisTypeParameterCount => GenericsHelper.GetGenericTypeParameterCount(tr.Name, Cx.MdReader);
 
         public override Type? ContainingType
         {
             get
             {
-                if (tr.ResolutionScope.Kind == HandleKind.TypeReference)
-                    return (Type)Cx.Create((TypeReferenceHandle)tr.ResolutionScope);
-                return null;
+                return tr.ResolutionScope.Kind == HandleKind.TypeReference
+                    ? (Type)Cx.Create((TypeReferenceHandle)tr.ResolutionScope)
+                    : null;
             }
         }
 
@@ -96,9 +66,6 @@ namespace Semmle.Extraction.CIL.Entities
         {
             switch (tr.ResolutionScope.Kind)
             {
-                // case HandleKind.TypeReference:
-                //     ContainingType!.WriteAssemblyPrefix(trapFile);
-                //     break;
                 case HandleKind.AssemblyReference:
                     var assemblyDef = Cx.MdReader.GetAssemblyReference((AssemblyReferenceHandle)tr.ResolutionScope);
                     trapFile.Write(Cx.GetString(assemblyDef.Name));
@@ -107,14 +74,11 @@ namespace Semmle.Extraction.CIL.Entities
                     trapFile.Write("::");
                     break;
                 default:
-                    //Cx.WriteAssemblyPrefix(trapFile);
                     break;
             }
         }
 
         public override IEnumerable<Type> TypeParameters => typeParams.Value;
-
-        public override IEnumerable<Type> MethodParameters => throw new InternalError("This type does not have method parameters");
 
         public override void WriteId(TextWriter trapFile, bool inContext)
         {
@@ -123,7 +87,7 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override Type Construct(IEnumerable<Type> typeArguments)
         {
-            if (TotalTypeParametersCheck != typeArguments.Count())
+            if (TotalTypeParametersCount != typeArguments.Count())
                 throw new InternalError("Mismatched type arguments");
 
             return Cx.Populate(new ConstructedType(Cx, this, typeArguments));

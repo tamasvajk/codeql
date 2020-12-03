@@ -32,21 +32,17 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override string Name => pointee.Name + "*";
 
-        public override Namespace? Namespace => pointee.Namespace;
+        public override Namespace? ContainingNamespace => pointee.ContainingNamespace;
 
         public override Type? ContainingType => pointee.ContainingType;
 
-        public override TypeContainer Parent => pointee.Parent;
-
-        public override int ThisTypeParameters => 0;
+        public override int ThisTypeParameterCount => 0;
 
         public override CilTypeKind Kind => CilTypeKind.Pointer;
 
         public override void WriteAssemblyPrefix(TextWriter trapFile) => pointee.WriteAssemblyPrefix(trapFile);
 
         public override IEnumerable<Type> TypeParameters => throw new NotImplementedException();
-
-        public override IEnumerable<Type> MethodParameters => throw new NotImplementedException();
 
         public override Type Construct(IEnumerable<Type> typeArguments) => throw new NotImplementedException();
 

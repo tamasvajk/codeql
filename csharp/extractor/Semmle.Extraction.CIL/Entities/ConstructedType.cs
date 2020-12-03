@@ -1,5 +1,4 @@
 using System;
-using Microsoft.CodeAnalysis;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
@@ -13,44 +12,23 @@ namespace Semmle.Extraction.CIL.Entities
     public sealed class ConstructedType : Type
     {
         private readonly Type unboundGenericType;
+        private readonly Type? containingType;
 
         // Either null or notEmpty
         private readonly Type[]? thisTypeArguments;
 
         private readonly NamedTypeIdWriter idWriter;
 
-        public override IEnumerable<Type> ThisTypeArguments => thisTypeArguments.EnumerateNull();
-
-        public override IEnumerable<Type> ThisGenericArguments => thisTypeArguments.EnumerateNull();
-
-        public override IEnumerable<IExtractionProduct> Contents
-        {
-            get
-            {
-                foreach (var c in base.Contents)
-                    yield return c;
-
-                var i = 0;
-                foreach (var type in ThisGenericArguments)
-                {
-                    yield return type;
-                    yield return Tuples.cil_type_argument(this, i++, type);
-                }
-            }
-        }
-
-        public override Type SourceDeclaration => unboundGenericType;
-
         public ConstructedType(Context cx, Type unboundType, IEnumerable<Type> typeArguments) : base(cx)
         {
             idWriter = new NamedTypeIdWriter(this);
 
             var suppliedArgs = typeArguments.Count();
-            if (suppliedArgs != unboundType.TotalTypeParametersCheck)
+            if (suppliedArgs != unboundType.TotalTypeParametersCount)
                 throw new InternalError("Unexpected number of type arguments in ConstructedType");
 
             unboundGenericType = unboundType;
-            var thisParams = unboundType.ThisTypeParameters;
+            var thisParams = unboundType.ThisTypeParameterCount;
 
             if (typeArguments.Count() == thisParams)
             {
@@ -70,6 +48,25 @@ namespace Semmle.Extraction.CIL.Entities
                 thisTypeArguments = typeArguments.Skip(parentParams).ToArray();
             }
         }
+
+        public override IEnumerable<IExtractionProduct> Contents
+        {
+            get
+            {
+                foreach (var c in base.Contents)
+                    yield return c;
+
+                var i = 0;
+                foreach (var type in ThisTypeArguments)
+                {
+                    yield return type;
+                    yield return Tuples.cil_type_argument(this, i++, type);
+                }
+            }
+        }
+
+        public override Type SourceDeclaration => unboundGenericType;
+
 
         public override bool Equals(object? obj)
         {
@@ -92,14 +89,15 @@ namespace Semmle.Extraction.CIL.Entities
             return h;
         }
 
-        private readonly Type? containingType;
         public override Type? ContainingType => containingType;
 
         public override string Name => unboundGenericType.Name;
 
-        public override Namespace Namespace => unboundGenericType.Namespace!;
+        public override Namespace ContainingNamespace => unboundGenericType.ContainingNamespace!;
 
-        public override int ThisTypeParameters => thisTypeArguments == null ? 0 : thisTypeArguments.Length;
+        public override int ThisTypeParameterCount => 0;
+
+        public override IEnumerable<Type> ThisTypeArguments => thisTypeArguments.EnumerateNull();
 
         public override CilTypeKind Kind => unboundGenericType.Kind;
 
@@ -116,7 +114,5 @@ namespace Semmle.Extraction.CIL.Entities
         public override void WriteAssemblyPrefix(TextWriter trapFile) => unboundGenericType.WriteAssemblyPrefix(trapFile);
 
         public override IEnumerable<Type> TypeParameters => Enumerable.Empty<Type>();
-
-        public override IEnumerable<Type> MethodParameters => throw new NotImplementedException();
     }
 }

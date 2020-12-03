@@ -14,7 +14,8 @@ namespace Semmle.Extraction.CIL.Entities
     {
         private readonly TypeDefinitionHandle handle;
         private readonly TypeDefinition td;
-
+        private readonly Type? declType;
+        private readonly Lazy<IEnumerable<TypeTypeParameter>> typeParams;
         private readonly NamedTypeIdWriter idWriter;
 
         public TypeDefinitionType(Context cx, TypeDefinitionHandle handle) : base(cx)
@@ -23,9 +24,9 @@ namespace Semmle.Extraction.CIL.Entities
             td = cx.MdReader.GetTypeDefinition(handle);
             this.handle = handle;
 
-            declType =
-                td.GetDeclaringType().IsNil ? null :
-                (Type)cx.Create(td.GetDeclaringType());
+            declType = td.GetDeclaringType().IsNil
+                ? null
+                : (Type)cx.Create(td.GetDeclaringType());
 
             // Lazy because should happen during population.
             typeParams = new Lazy<IEnumerable<TypeTypeParameter>>(MakeTypeParameters);
@@ -43,23 +44,14 @@ namespace Semmle.Extraction.CIL.Entities
             idWriter.WriteId(trapFile, inContext);
         }
 
-        public override string Name
-        {
-            get
-            {
-                var name = Cx.GetString(td.Name);
-                var tick = name.IndexOf('`');
-                return tick == -1 ? name : name.Substring(0, tick);
-            }
-        }
+        public override string Name => GenericsHelper.GetNonGenericName(td.Name, Cx.MdReader);
 
-        public override Namespace Namespace => Cx.Create(td.NamespaceDefinition);
+        public override Namespace ContainingNamespace => Cx.Create(td.NamespaceDefinition);
 
-        private readonly Type? declType;
 
         public override Type? ContainingType => declType;
 
-        public override int ThisTypeParameters
+        public override int ThisTypeParameterCount
         {
             get
             {
@@ -75,6 +67,9 @@ namespace Semmle.Extraction.CIL.Entities
 
         public override Type Construct(IEnumerable<Type> typeArguments)
         {
+            if (TotalTypeParametersCount != typeArguments.Count())
+                throw new InternalError("Mismatched type arguments");
+
             return Cx.Populate(new ConstructedType(Cx, this, typeArguments));
         }
 
@@ -91,10 +86,10 @@ namespace Semmle.Extraction.CIL.Entities
 
         private IEnumerable<TypeTypeParameter> MakeTypeParameters()
         {
-            if (ThisTypeParameters == 0)
+            if (ThisTypeParameterCount == 0)
                 return Enumerable.Empty<TypeTypeParameter>();
 
-            var newTypeParams = new TypeTypeParameter[ThisTypeParameters];
+            var newTypeParams = new TypeTypeParameter[ThisTypeParameterCount];
             var genericParams = td.GetGenericParameters();
             var toSkip = genericParams.Count - newTypeParams.Length;
 
@@ -105,10 +100,6 @@ namespace Semmle.Extraction.CIL.Entities
                 newTypeParams[i].PopulateHandle(genericParams[i + toSkip]);
             return newTypeParams;
         }
-
-        private readonly Lazy<IEnumerable<TypeTypeParameter>> typeParams;
-
-        public override IEnumerable<Type> MethodParameters => Enumerable.Empty<Type>();
 
         public override IEnumerable<Type> TypeParameters
         {
