@@ -20,9 +20,9 @@ namespace Semmle.Extraction.CIL.Entities
         public TypeReferenceType(Context cx, TypeReferenceHandle handle) : base(cx)
         {
             this.idWriter = new NamedTypeIdWriter(this);
-            this.typeParams = new Lazy<TypeTypeParameter[]>(GenericsHelper.MakeTypeParameters(this, ThisTypeParameterCount));
             this.handle = handle;
             this.tr = cx.MdReader.GetTypeReference(handle);
+            this.typeParams = new Lazy<TypeTypeParameter[]>(GenericsHelper.MakeTypeParameters(this, ThisTypeParameterCount));
         }
 
         public override bool Equals(object? obj)
