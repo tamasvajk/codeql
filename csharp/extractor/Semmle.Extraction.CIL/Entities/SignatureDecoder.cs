@@ -47,10 +47,27 @@ namespace Semmle.Extraction.CIL.Entities
 
         private struct FnPtr : ITypeSignature
         {
+            private readonly MethodSignature<ITypeSignature> signature;
+
+            public FnPtr(MethodSignature<ITypeSignature> signature)
+            {
+                this.signature = signature;
+            }
 
             public void WriteId(TextWriter trapFile, GenericContext gc)
             {
-                trapFile.Write("<method signature>");
+                trapFile.Write("delegate* ");
+                trapFile.Write(FunctionPointerType.GetCallingConvention(signature.Header.CallingConvention));
+                trapFile.Write("<");
+                foreach (var pt in signature.ParameterTypes)
+                {
+                    // todo: check in/out modifiers. They come from the modifier of a Modified
+                    // init only accessor extraction already contains part of that change
+                    pt.WriteId(trapFile, gc);
+                    trapFile.Write(",");
+                }
+                signature.ReturnType.WriteId(trapFile, gc);
+                trapFile.Write(">");
             }
         }
 
@@ -61,7 +78,7 @@ namespace Semmle.Extraction.CIL.Entities
             new ByRef(elementType);
 
         ITypeSignature ISignatureTypeProvider<ITypeSignature, object>.GetFunctionPointerType(MethodSignature<ITypeSignature> signature) =>
-            new FnPtr();
+            new FnPtr(signature);
 
         private class Instantiation : ITypeSignature
         {

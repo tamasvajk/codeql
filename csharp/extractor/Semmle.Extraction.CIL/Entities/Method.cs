@@ -10,7 +10,7 @@ namespace Semmle.Extraction.CIL.Entities
     /// <summary>
     /// A method entity.
     /// </summary>
-    internal abstract class Method : TypeContainer, IMember
+    internal abstract class Method : TypeContainer, IMember, IParameterizable
     {
         protected MethodTypeParameter[]? genericParams;
         protected GenericContext gc;
@@ -86,7 +86,21 @@ namespace Semmle.Extraction.CIL.Entities
             }
 
             foreach (var p in parameterTypes)
-                yield return Cx.Populate(new Parameter(Cx, this, i++, p));
+            {
+                var t = p;
+                if (t is ModifiedType mt)
+                {
+                    t = mt.Unmodified;
+                    Cx.Cx.Extractor.Logger.Log(Util.Logging.Severity.Info, $"Modifier '{mt.Modifier.GetQualifiedName()}' is not extracted for method parameter {i} in '{DeclaringType.GetQualifiedName()}.{Name}'");
+                }
+                if (t is ByReferenceType brt)
+                {
+                    // todo extract reference
+                    t = brt.UnderlyingType;
+                }
+                var param = Cx.Populate(new Parameter(Cx, this, i++, t));
+                yield return param;
+            }
         }
     }
 }

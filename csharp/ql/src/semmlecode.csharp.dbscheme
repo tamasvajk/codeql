@@ -1653,6 +1653,7 @@ case @cil_type.kind of
 | 1 = @cil_typeparameter
 | 2 = @cil_array_type
 | 3 = @cil_pointer_type
+| 4 = @cil_function_pointer_type
 ;
 
 cil_type(
@@ -1670,6 +1671,11 @@ cil_array_type(
   unique int id: @cil_array_type ref,
   int element_type: @cil_type ref,
   int rank: int ref);
+
+cil_function_pointer_return_type(
+  unique int id: @cil_function_pointer_type ref,
+  int return_type: @cil_type ref,
+  int return_kind: int ref); // 1 ref, 0 non-ref
 
 cil_method(
   unique int id: @cil_method,
@@ -1704,16 +1710,18 @@ cil_field(
 @cil_variable = @cil_field | @cil_stack_variable;
 @cil_stack_variable = @cil_local_variable | @cil_parameter;
 @cil_member = @cil_method | @cil_type | @cil_field | @cil_property | @cil_event;
+@cil_parameterizable = @cil_method | @cil_function_pointer_type;
 
-#keyset[method, index]
+#keyset[parameterizable, index]
 cil_parameter(
   unique int id: @cil_parameter,
-  int method: @cil_method ref,
+  int parameterizable: @cil_parameterizable ref,
   int index: int ref,
   int param_type: @cil_type ref);
 
 cil_parameter_in(unique int id: @cil_parameter ref);
 cil_parameter_out(unique int id: @cil_parameter ref);
+cil_parameter_ref(unique int id: @cil_parameter ref);
 
 cil_setter(unique int prop: @cil_property ref,
   int method: @cil_method ref);
@@ -1746,6 +1754,10 @@ cil_local_variable(
   int impl: @cil_method_implementation ref,
   int index: int ref,
   int var_type: @cil_type ref);
+
+cil_function_pointer_calling_conventions(
+  int id: @cil_function_pointer_type ref,
+  int kind: int ref);
 
 // CIL handlers (exception handlers etc).
 

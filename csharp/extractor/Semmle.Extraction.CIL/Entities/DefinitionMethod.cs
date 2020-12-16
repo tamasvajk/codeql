@@ -95,7 +95,14 @@ namespace Semmle.Extraction.CIL.Entities
                 }
 
                 yield return Tuples.metadata_handle(this, Cx.Assembly, MetadataTokens.GetToken(handle));
-                yield return Tuples.cil_method(this, Name, declaringType, typeSignature.ReturnType);
+
+                var t = typeSignature.ReturnType;
+                if (t is ModifiedType mt)
+                {
+                    t = mt.Unmodified;
+                    Cx.Cx.Extractor.Logger.Log(Util.Logging.Severity.Info, $"Modifier '{mt.Modifier.GetQualifiedName()}' is not extracted for method '{declaringType.GetQualifiedName()}.{Name}'");
+                }
+                yield return Tuples.cil_method(this, Name, declaringType, t);
                 yield return Tuples.cil_method_source_declaration(this, this);
                 yield return Tuples.cil_method_location(this, Cx.Assembly);
 

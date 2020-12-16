@@ -45,7 +45,13 @@ namespace Semmle.Extraction.CIL.Entities
         {
             get
             {
-                yield return Tuples.cil_field(this, DeclaringType, Name, Type);
+                var t = Type;
+                if (t is ModifiedType mt)
+                {
+                    t = mt.Unmodified;
+                    Cx.Cx.Extractor.Logger.Log(Util.Logging.Severity.Info, $"Modifier '{mt.Modifier.GetQualifiedName()}' is not extracted for field '{DeclaringType.GetQualifiedName()}.{Name}'");
+                }
+                yield return Tuples.cil_field(this, DeclaringType, Name, t);
             }
         }
 

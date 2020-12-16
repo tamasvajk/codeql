@@ -86,6 +86,12 @@ namespace Semmle.Extraction.CIL
         internal static Tuple cil_method(Method method, string name, Type declType, Type returnType) =>
             new Tuple("cil_method", method, name, declType, returnType);
 
+        internal static Tuple cil_function_pointer_return_type(FunctionPointerType fnptr, Type returnType, bool isByRef) =>
+            new Tuple("cil_function_pointer_return_type", fnptr, returnType, isByRef ? 1 : 0);
+
+        internal static Tuple cil_function_pointer_calling_conventions(FunctionPointerType fnptr, System.Reflection.Metadata.SignatureCallingConvention callingConvention) =>
+            new Tuple("cil_function_pointer_calling_conventions", fnptr, (int)callingConvention);
+
         internal static Tuple cil_method_implementation(MethodImplementation impl, Method method, Assembly assembly) =>
             new Tuple("cil_method_implementation", impl, method, assembly);
 
@@ -101,14 +107,14 @@ namespace Semmle.Extraction.CIL
         internal static Tuple cil_newslot(Method method) =>
             new Tuple("cil_newslot", method);
 
-        internal static Tuple cil_parameter(Parameter p, Method m, int i, Type t) =>
+        internal static Tuple cil_parameter(Parameter p, IParameterizable m, int i, Type t) =>
             new Tuple("cil_parameter", p, m, i, t);
 
-        internal static Tuple cil_parameter_in(Parameter p) =>
-            new Tuple("cil_parameter_in", p);
+        internal static Tuple cil_parameter_in(Parameter p) => new Tuple("cil_parameter_in", p);
 
-        internal static Tuple cil_parameter_out(Parameter p) =>
-            new Tuple("cil_parameter_out", p);
+        internal static Tuple cil_parameter_out(Parameter p) => new Tuple("cil_parameter_out", p);
+
+        internal static Tuple cil_parameter_ref(Parameter p) => new Tuple("cil_parameter_ref", p);
 
         internal static Tuple cil_pointer_type(PointerType t, Type pointee) =>
             new Tuple("cil_pointer_type", t, pointee);

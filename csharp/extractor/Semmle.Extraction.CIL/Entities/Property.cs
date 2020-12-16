@@ -54,7 +54,15 @@ namespace Semmle.Extraction.CIL.Entities
                 yield return Tuples.metadata_handle(this, Cx.Assembly, MetadataTokens.GetToken(handle));
                 var sig = pd.DecodeSignature(Cx.TypeSignatureDecoder, type);
 
-                yield return Tuples.cil_property(this, type, Cx.ShortName(pd.Name), sig.ReturnType);
+                var name = Cx.ShortName(pd.Name);
+
+                var t = sig.ReturnType;
+                if (t is ModifiedType mt)
+                {
+                    t = mt.Unmodified;
+                    Cx.Cx.Extractor.Logger.Log(Util.Logging.Severity.Info, $"Modifier '{mt.Modifier.GetQualifiedName()}' is not extracted for property '{type.GetQualifiedName()}.{name}'");
+                }
+                yield return Tuples.cil_property(this, type, name, t);
 
                 var accessors = pd.GetAccessors();
                 if (!accessors.Getter.IsNil)
