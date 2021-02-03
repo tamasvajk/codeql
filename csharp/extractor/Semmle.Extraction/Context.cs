@@ -215,7 +215,7 @@ namespace Semmle.Extraction
                 }
                 catch (Exception ex)  // lgtm[cs/catch-of-all-exceptions]
                 {
-                    ExtractionError("Uncaught exception", ex.Message, Entities.Location.Create(this), ex.StackTrace);
+                    ExtractionError($"Uncaught exception. {ex.Message}", "", Entities.Location.Create(this), ex.StackTrace);
                 }
             }
         }
@@ -535,7 +535,7 @@ namespace Semmle.Extraction
                 }
                 else
                 {
-                    message = new Message("Uncaught exception", ex.Message, Entities.Location.Create(context), ex.StackTrace);
+                    message = new Message($"Uncaught exception. {ex.Message}", "", Entities.Location.Create(context), ex.StackTrace);
                 }
 
                 context.ExtractionError(message);
