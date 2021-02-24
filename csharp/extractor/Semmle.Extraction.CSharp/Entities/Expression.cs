@@ -12,11 +12,11 @@ namespace Semmle.Extraction.CSharp.Entities
     internal class Expression : FreshEntity, IExpressionParentEntity
     {
         private readonly IExpressionInfo info;
-        public AnnotatedTypeSymbol? Type { get; }
+        public AnnotatedTypeSymbol? Type { get; private set; }
         public Extraction.Entities.Location Location { get; }
         public ExprKind Kind { get; }
 
-        internal Expression(IExpressionInfo info)
+        internal Expression(IExpressionInfo info, bool shouldPopulate = true)
             : base(info.Context)
         {
             this.info = info;
@@ -24,7 +24,10 @@ namespace Semmle.Extraction.CSharp.Entities
             Kind = info.Kind;
             Type = info.Type;
 
-            TryPopulate();
+            if (shouldPopulate)
+            {
+                TryPopulate();
+            }
         }
 
         protected sealed override void Populate(TextWriter trapFile)
@@ -55,6 +58,14 @@ namespace Semmle.Extraction.CSharp.Entities
                 trapFile.expr_value(this, value);
 
             type.PopulateGenerics();
+        }
+
+        internal void SetType(ITypeSymbol type)
+        {
+            if (type is object)
+            {
+                Type = new AnnotatedTypeSymbol(type, type.NullableAnnotation);
+            }
         }
 
         public override Microsoft.CodeAnalysis.Location ReportingLocation => Location.Symbol;
