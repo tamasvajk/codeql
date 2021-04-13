@@ -11,6 +11,7 @@
 import sys
 import os
 import subprocess
+import helpers
 
 print('Script to generate stub.cs files for C# qltest projects')
 
@@ -53,11 +54,8 @@ if os.path.isfile(outputFile):
     os.remove(outputFile)  # It would interfere with the test.
     print("Removed previous", outputFile)
 
-cmd = ['codeql', 'test', 'run', '--keep-databases', testDir]
-print('Running ' + ' '.join(cmd))
-if subprocess.check_call(cmd):
-    print("codeql test failed. Please fix up the test before proceeding.")
-    exit(1)
+helpers.run_cmd(['codeql', 'test', 'run', '--keep-databases', testDir],
+                "codeql test failed. Please fix up the test before proceeding.")
 
 dbDir = os.path.join(testDir, os.path.basename(testDir) + ".testproj")
 
@@ -65,38 +63,13 @@ if not os.path.isdir(dbDir):
     print("Expected database directory " + dbDir + " not found.")
     exit(1)
 
-cmd = ['codeql', 'query', 'run', os.path.join(
-    csharpQueries, 'MinimalStubsFromSource.ql'), '--database', dbDir, '--output', bqrsFile]
-print('Running ' + ' '.join(cmd))
-if subprocess.check_call(cmd):
-    print('Failed to run the query to generate output file.')
-    exit(1)
+helpers.run_cmd(['codeql', 'query', 'run', os.path.join(
+    csharpQueries, 'MinimalStubsFromSource.ql'), '--database', dbDir, '--output', bqrsFile], 'Failed to run the query to generate output file.')
 
-cmd = ['codeql', 'bqrs', 'decode', bqrsFile, '--output',
-       outputFile, '--format=text', '--no-titles']
-print('Running ' + ' '.join(cmd))
-if subprocess.check_call(cmd):
-    print('Failed to run the query to generate output file.')
-    exit(1)
+helpers.run_cmd(['codeql', 'bqrs', 'decode', bqrsFile, '--output',
+                 outputFile, '--format=text', '--no-titles'], 'Failed to run the query to generate output file.')
 
-# Remove the leading and trailing bytes from the file
-length = os.stat(outputFile).st_size
-if length < 20:
-    contents = b''
-else:
-    f = open(outputFile, "rb")
-    try:
-        pre = f.read(2)
-        print("Start characters in file skipped.", pre)
-        contents = f.read(length - 5)
-        post = f.read(3)
-        print("End characters in file skipped.", post)
-    finally:
-        f.close()
-
-f = open(outputFile, "wb")
-f.write(contents)
-f.close()
+helpers.trim_output_file(outputFile)
 
 if os.path.isfile(bqrsFile):
     os.remove(bqrsFile)  # Cleanup
