@@ -45,6 +45,7 @@ if not foundCS:
 
 csharpQueries = os.path.abspath(os.path.dirname(sys.argv[0]))
 outputFile = os.path.join(testDir, 'stubs.cs')
+bqrsFile = os.path.join(testDir, 'stubs.bqrs')
 
 print("Stubbing qltest in", testDir)
 
@@ -65,7 +66,14 @@ if not os.path.isdir(dbDir):
     exit(1)
 
 cmd = ['codeql', 'query', 'run', os.path.join(
-    csharpQueries, 'MinimalStubsFromSource.ql'), '--database', dbDir, '--output', outputFile]
+    csharpQueries, 'MinimalStubsFromSource.ql'), '--database', dbDir, '--output', bqrsFile]
+print('Running ' + ' '.join(cmd))
+if subprocess.check_call(cmd):
+    print('Failed to run the query to generate output file.')
+    exit(1)
+
+cmd = ['codeql', 'bqrs', 'decode', bqrsFile, '--output',
+       outputFile, '--format=text', '--no-titles']
 print('Running ' + ' '.join(cmd))
 if subprocess.check_call(cmd):
     print('Failed to run the query to generate output file.')
@@ -78,33 +86,21 @@ if length < 20:
 else:
     f = open(outputFile, "rb")
     try:
-        countTillSlash = 0
-        foundSlash = False
-        slash = f.read(1)
-        while slash != b'':
-            if slash == b'/':
-                foundSlash = True
-                break
-            countTillSlash += 1
-            slash = f.read(1)
-
-        if not foundSlash:
-            countTillSlash = 0
-
-        f.seek(0)
-        quote = f.read(countTillSlash)
-        print("Start characters in file skipped.", quote)
-        post = b'\x0e\x01\x08#select\x01\x01\x00s\x00'
-        contents = f.read(length - len(post) - countTillSlash)
-        quote = f.read(len(post))
-        if quote != post:
-            print("Unexpected end character in file.", quote)
+        pre = f.read(2)
+        print("Start characters in file skipped.", pre)
+        contents = f.read(length - 5)
+        post = f.read(3)
+        print("End characters in file skipped.", post)
     finally:
         f.close()
 
 f = open(outputFile, "wb")
 f.write(contents)
 f.close()
+
+if os.path.isfile(bqrsFile):
+    os.remove(bqrsFile)  # Cleanup
+    print("Removed temp BQRS file", bqrsFile)
 
 cmd = ['codeql', 'test', 'run', testDir]
 print('Running ' + ' '.join(cmd))
