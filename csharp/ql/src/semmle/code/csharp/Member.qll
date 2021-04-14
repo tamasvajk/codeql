@@ -97,7 +97,8 @@ class Modifiable extends Declaration, @modifiable {
    */
   predicate isEffectivelyPrivate() {
     this.isPrivate() or
-    this.getDeclaringType+().isPrivate()
+    this.getDeclaringType+().isPrivate() or
+    this.(Virtualizable).getExplicitlyImplementedInterface().isEffectivelyPrivate()
   }
 
   /**
@@ -106,7 +107,8 @@ class Modifiable extends Declaration, @modifiable {
    */
   predicate isEffectivelyInternal() {
     this.isInternal() or
-    this.getDeclaringType+().isInternal()
+    this.getDeclaringType+().isInternal() or
+    this.(Virtualizable).getExplicitlyImplementedInterface().isInternal()
   }
 
   /**
@@ -152,6 +154,11 @@ class Virtualizable extends Member, @virtualizable {
   override predicate isPublic() {
     Member.super.isPublic() or
     implementsExplicitInterface()
+  }
+
+  override predicate isPrivate() {
+    Member.super.isPrivate() and
+    not implementsExplicitInterface()
   }
 
   /**
