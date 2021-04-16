@@ -47,6 +47,28 @@ namespace Test
         {
             public Class12(int i, float j) : base(1) => throw null;
         }
+
+        public class GenericType<T>
+        {
+            public class X { }
+        }
+
+        public GenericType<int>.X Prop { get; }
+
+        public abstract class Class13
+        {
+            protected internal virtual void M() => throw null;
+            public virtual void M1<T>() where T : Class13 => throw null;
+            public abstract void M2();
+        }
+
+        public abstract class Class14 : Class13
+        {
+            protected internal override void M() => throw null;
+            public override void M1<T>() => throw null;
+            public abstract override void M2();
+        }
+
     }
 
     internal class Class2
