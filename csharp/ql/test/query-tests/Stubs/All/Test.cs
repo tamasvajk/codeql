@@ -75,4 +75,58 @@ namespace Test
     {
         public void M() => throw null;
     }
+
+    public class Class3
+    {
+        public object Item { get; set; }
+        [System.Runtime.CompilerServices.IndexerName("MyItem")]
+        public object this[string index] { get { return null; } set { } }
+    }
+
+    public class Class4
+    {
+        unsafe public void M(int* p) => throw null;
+    }
+
+    public interface IInterface1
+    {
+        void M1() => throw null;
+        void M2();
+    }
+
+    public class Class5 : IInterface1
+    {
+        public void M2() => throw null;
+    }
+
+    public class Class6<T> where T : class, IInterface1
+    {
+        public Class6(int i) => throw null;
+
+        public virtual void M1<T>() where T : class, IInterface1, new() => throw null;
+    }
+
+    public class Class7 : Class6<Class5>
+    {
+        public Class7(int i) : base(i) => throw null;
+
+        public override void M1<T>() where T : class => throw null;
+    }
+
+    public class Class8
+    {
+        public const int @this = 10;
+    }
+
+    public class Class9
+    {
+        private Class9(int i) => throw null;
+
+        public class Nested : Class9
+        {
+            internal Nested(int i) : base(i) => throw null;
+        }
+
+        public Class9.Nested NestedInstance { get; } = new Class9.Nested(1);
+    }
 }
