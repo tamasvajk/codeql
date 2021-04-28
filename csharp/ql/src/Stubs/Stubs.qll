@@ -87,8 +87,8 @@ abstract private class GeneratedType extends ValueOrRefType, GeneratedElement {
     else (
       not this instanceof DelegateType and
       result =
-        this.stubComment() + this.stubAttributes() + this.stubAbstractModifier() +
-          this.stubStaticModifier() + stubAccessibility(this) + this.stubKeyword() + " " +
+        this.stubComment() + this.stubAttributes() + stubAccessibility(this) +
+          this.stubAbstractModifier() + this.stubStaticModifier() + this.stubKeyword() + " " +
           this.getUndecoratedName() + stubGenericArguments(this) + stubBaseTypesString() +
           stubTypeParametersConstraints(this) + "\n{\n" + stubMembers() + "}\n\n"
       or
@@ -238,8 +238,14 @@ private class GeneratedNamespace extends Namespace, GeneratedElement {
 
   private string getPostAmble() { if this.isGlobalNamespace() then result = "" else result = "}\n" }
 
-  final string getStubs() {
-    result = getPreamble() + getTypeStubs() + getSubNamespaces() + getPostAmble()
+  final string getStubs(Assembly assembly) {
+    exists(string typeStubs, string subNamespaces |
+      typeStubs = getTypeStubs(assembly) and
+      subNamespaces = getSubNamespaceStubs(assembly) and
+      result = getPreamble() + typeStubs + subNamespaces + getPostAmble()
+    |
+      typeStubs != "" or subNamespaces != ""
+    )
   }
 
   /** Gets the `n`th generated child namespace, indexed from 0. */
@@ -255,14 +261,25 @@ private class GeneratedNamespace extends Namespace, GeneratedElement {
   }
 
   language[monotonicAggregates]
-  private string getSubNamespaces() {
-    result = concat(int i | exists(getChildNamespace(i)) | getChildNamespace(i).getStubs())
+  string getSubNamespaceStubs(Assembly assembly) {
+    result = concat(int i | exists(getChildNamespace(i)) | getChildNamespace(i).getStubs(assembly))
   }
 
-  private string getTypeStubs() {
+  string getTypeStubs(Assembly assembly) {
     result =
-      concat(string s | s = any(GeneratedType gt | gt.getDeclaringNamespace() = this).getStub())
+      concat(string s |
+        s =
+          any(GeneratedType gt |
+            gt.getDeclaringNamespace() = this and
+            gt.getALocation() = assembly
+          ).getStub()
+      )
   }
+}
+
+/** All public declarations from assemblies. */
+class AllExternalPublicDeclarations extends GeneratedDeclaration {
+  AllExternalPublicDeclarations() { this.fromLibrary() }
 }
 
 /**
@@ -783,8 +800,53 @@ private string stubSemmleExtractorOptions() {
 }
 
 /** Gets the generated C# code. */
-string generatedCode() {
+string generatedCode(Assembly assembly) {
   result =
     "// This file contains auto-generated code.\n" + stubSemmleExtractorOptions() + "\n" +
-      any(GeneratedNamespace ns | ns.isGlobalNamespace()).getStubs()
+      any(GeneratedNamespace ns | ns.isGlobalNamespace()).getStubs(assembly)
+}
+
+private predicate test(GeneratedType gt, Assembly a) { gt.getALocation() = a }
+
+private predicate test2(GeneratedNamespace ns1, string s, Assembly a) {
+  //ns1.isGlobalNamespace() and
+  s = ns1.getStubs(a).substring(0, 100)
+}
+
+private predicate test3(GeneratedNamespace ns, string s) {
+  s = concat(ns.getTypeStubs(_)) and ns.getName() = "Microsoft"
+}
+
+private predicate test3a(GeneratedNamespace ns, string s) {
+  s = concat(ns.getSubNamespaceStubs(_)) and ns.getName() = "Microsoft"
+}
+
+private predicate test3b(GeneratedNamespace ns, GeneratedNamespace sub, int i, string s, Assembly a) {
+  sub = ns.getChildNamespace(i) and
+  ns.getName() = "Microsoft" and
+  s = sub.getStubs(a).substring(0, 200)
+}
+
+private predicate test3c(GeneratedNamespace ns, GeneratedNamespace sub, int i, string s) {
+  sub = ns.getChildNamespace(i) and
+  ns.getName() = "Microsoft" and
+  s = concat(sub.getStubs(_).substring(0, 200))
+}
+
+private predicate test4(GeneratedNamespace ns, string s, Assembly a) {
+  ns.getParentNamespace().getName() = "Microsoft" and
+  ns.getName() = "AspNetCore" and
+  ns.getTypeStubs(a) = s
+}
+
+private predicate test5(GeneratedNamespace ns, Assembly a, string total) {
+  ns.getParentNamespace().getName() = "AspNetCore" and
+  ns.getName() = "DataProtection" and
+  total = ns.getSubNamespaceStubs(a)
+}
+
+private predicate test6(GeneratedNamespace ns, Assembly a, string total) {
+  ns.getParentNamespace().getName() = "AspNetCore" and
+  ns.getName() = "DataProtection" and
+  total = concat(int j | exists(ns.getChildNamespace(j)) | ns.getChildNamespace(j).getStubs(a))
 }
