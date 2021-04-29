@@ -48,6 +48,8 @@ abstract private class GeneratedType extends ValueOrRefType, GeneratedElement {
     )
   }
 
+  predicate isInAssembly(Assembly assembly) { this.getALocation() = assembly }
+
   private string stubKeyword() {
     this instanceof Interface and result = "interface"
     or
@@ -239,13 +241,8 @@ private class GeneratedNamespace extends Namespace, GeneratedElement {
   private string getPostAmble() { if this.isGlobalNamespace() then result = "" else result = "}\n" }
 
   final string getStubs(Assembly assembly) {
-    exists(string typeStubs, string subNamespaces |
-      typeStubs = getTypeStubs(assembly) and
-      subNamespaces = getSubNamespaceStubs(assembly) and
-      result = getPreamble() + typeStubs + subNamespaces + getPostAmble()
-    |
-      typeStubs != "" or subNamespaces != ""
-    )
+    result =
+      getPreamble() + getTypeStubs(assembly) + getSubNamespaceStubs(assembly) + getPostAmble()
   }
 
   /** Gets the `n`th generated child namespace, indexed from 0. */
@@ -260,19 +257,30 @@ private class GeneratedNamespace extends Namespace, GeneratedElement {
     result = count(GeneratedNamespace g | g.getParentNamespace() = this)
   }
 
+  private predicate isInAssembly(Assembly assembly) {
+    any(GeneratedType gt | gt.getDeclaringNamespace() = this).isInAssembly(assembly)
+    or
+    this.getChildNamespace(_).isInAssembly(assembly)
+  }
+
   language[monotonicAggregates]
   string getSubNamespaceStubs(Assembly assembly) {
-    result = concat(int i | exists(getChildNamespace(i)) | getChildNamespace(i).getStubs(assembly))
+    this.isInAssembly(assembly) and
+    result =
+      concat(GeneratedNamespace child, int i |
+        child = getChildNamespace(i) and child.isInAssembly(assembly)
+      |
+        child.getStubs(assembly) order by i
+      )
   }
 
   string getTypeStubs(Assembly assembly) {
+    this.isInAssembly(assembly) and
     result =
-      concat(string s |
-        s =
-          any(GeneratedType gt |
-            gt.getDeclaringNamespace() = this and
-            gt.getALocation() = assembly
-          ).getStub()
+      concat(GeneratedType gt |
+        gt.getDeclaringNamespace() = this and gt.isInAssembly(assembly)
+      |
+        gt.getStub() order by gt.getName()
       )
   }
 }
