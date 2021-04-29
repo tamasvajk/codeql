@@ -285,11 +285,6 @@ private class GeneratedNamespace extends Namespace, GeneratedElement {
   }
 }
 
-/** All public declarations from assemblies. */
-class AllExternalPublicDeclarations extends GeneratedDeclaration {
-  AllExternalPublicDeclarations() { this.fromLibrary() }
-}
-
 /**
  * Specify assemblies to exclude.
  * Do not generate any types from these assemblies.
@@ -812,49 +807,4 @@ string generatedCode(Assembly assembly) {
   result =
     "// This file contains auto-generated code.\n" + stubSemmleExtractorOptions() + "\n" +
       any(GeneratedNamespace ns | ns.isGlobalNamespace()).getStubs(assembly)
-}
-
-private predicate test(GeneratedType gt, Assembly a) { gt.getALocation() = a }
-
-private predicate test2(GeneratedNamespace ns1, string s, Assembly a) {
-  //ns1.isGlobalNamespace() and
-  s = ns1.getStubs(a).substring(0, 100)
-}
-
-private predicate test3(GeneratedNamespace ns, string s) {
-  s = concat(ns.getTypeStubs(_)) and ns.getName() = "Microsoft"
-}
-
-private predicate test3a(GeneratedNamespace ns, string s) {
-  s = concat(ns.getSubNamespaceStubs(_)) and ns.getName() = "Microsoft"
-}
-
-private predicate test3b(GeneratedNamespace ns, GeneratedNamespace sub, int i, string s, Assembly a) {
-  sub = ns.getChildNamespace(i) and
-  ns.getName() = "Microsoft" and
-  s = sub.getStubs(a).substring(0, 200)
-}
-
-private predicate test3c(GeneratedNamespace ns, GeneratedNamespace sub, int i, string s) {
-  sub = ns.getChildNamespace(i) and
-  ns.getName() = "Microsoft" and
-  s = concat(sub.getStubs(_).substring(0, 200))
-}
-
-private predicate test4(GeneratedNamespace ns, string s, Assembly a) {
-  ns.getParentNamespace().getName() = "Microsoft" and
-  ns.getName() = "AspNetCore" and
-  ns.getTypeStubs(a) = s
-}
-
-private predicate test5(GeneratedNamespace ns, Assembly a, string total) {
-  ns.getParentNamespace().getName() = "AspNetCore" and
-  ns.getName() = "DataProtection" and
-  total = ns.getSubNamespaceStubs(a)
-}
-
-private predicate test6(GeneratedNamespace ns, Assembly a, string total) {
-  ns.getParentNamespace().getName() = "AspNetCore" and
-  ns.getName() = "DataProtection" and
-  total = concat(int j | exists(ns.getChildNamespace(j)) | ns.getChildNamespace(j).getStubs(a))
 }
