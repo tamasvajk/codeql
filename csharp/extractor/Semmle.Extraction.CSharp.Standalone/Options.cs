@@ -36,6 +36,9 @@ namespace Semmle.Extraction.CSharp.Standalone
                 case "skip-dotnet":
                     ScanNetFrameworkDlls = !value;
                     return true;
+                case "load-csproj-references":
+                    LoadCsprojReferences = value;
+                    return true;
                 case "self-contained-dotnet":
                     UseSelfContainedDotnet = value;
                     return true;
@@ -102,6 +105,11 @@ namespace Semmle.Extraction.CSharp.Standalone
         /// Whether to search the .Net framework directory.
         /// </summary>
         public bool ScanNetFrameworkDlls { get; private set; } = true;
+
+        /// <summary>
+        /// Whether to add .cs files from referenced .csproj references (only used during test execution)
+        /// </summary>
+        public bool LoadCsprojReferences { get; private set; } = false;
 
         /// <summary>
         /// Whether to use mscorlib as a reference.
