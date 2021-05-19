@@ -88,13 +88,20 @@ class Modifiable extends Declaration, @modifiable {
   /** Holds if this declaration is `unsafe`. */
   predicate isUnsafe() {
     this.hasModifier("unsafe") or
-    this.(Parameterizable).getAParameter().getType() instanceof PointerType
+    this.(Parameterizable).getAParameter().getType() instanceof PointerType or
+    this.(Property).getType() instanceof PointerType or
+    this.(Callable).getReturnType() instanceof PointerType
   }
 
   /** Holds if this declaration is `async`. */
   predicate isAsync() { this.hasModifier("async") }
 
-  private predicate isReallyPrivate() { this.isPrivate() and not this.isProtected() }
+  private predicate isReallyPrivate() {
+    this.isPrivate() and
+    not this.isProtected() and
+    // Rare case when a member is defined with the same name in multiple assemblies with different visibility
+    not this.isPublic()
+  }
 
   /**
    * Holds if this declaration is effectively `private`. A declaration is considered
@@ -114,9 +121,13 @@ class Modifiable extends Declaration, @modifiable {
   }
 
   private predicate isReallyInternal() {
-    this.isInternal() and not this.isProtected()
-    or
-    this.isPrivate() and this.isProtected()
+    (
+      this.isInternal() and not this.isProtected()
+      or
+      this.isPrivate() and this.isProtected()
+    ) and
+    // Rare case when a member is defined with the same name in multiple assemblies with different visibility
+    not this.isPublic()
   }
 
   /**
