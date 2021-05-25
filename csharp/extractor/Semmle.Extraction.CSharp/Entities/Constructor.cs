@@ -146,6 +146,8 @@ namespace Semmle.Extraction.CSharp.Entities
 
         public override void WriteId(EscapingTextWriter trapFile)
         {
+            PrefixGenericCallableId(trapFile, Symbol, OriginalDefinition);
+
             if (Symbol.IsStatic)
                 trapFile.Write("static");
             trapFile.WriteSubId(ContainingType!);
