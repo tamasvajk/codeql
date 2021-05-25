@@ -172,8 +172,7 @@ namespace Semmle.Extraction.CSharp
 
                 foreach (var cs in csProj.Sources)
                 {
-                    if (cs.EndsWith("obj/Debug/.NETCoreApp,Version=v5.0.AssemblyAttributes.cs") ||
-                        cs.EndsWith($"obj/Debug/{ fi.Name.Replace(".csproj", ".AssemblyInfo.cs") }"))
+                    if (cs.Contains("/obj/"))
                     {
                         continue;
                     }
