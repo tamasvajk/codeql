@@ -124,15 +124,6 @@ namespace Semmle.Extraction.CSharp.Entities
             }
         }
 
-        protected static void PrefixGenericCallableId(EscapingTextWriter trapFile, IMethodSymbol symbol, IEntity original)
-        {
-            if (!SymbolEqualityComparer.Default.Equals(symbol, symbol.OriginalDefinition))
-            {
-                trapFile.WriteSubId(original);
-                trapFile.Write("->");
-            }
-        }
-
         /// <summary>
         ///  Factored out to share logic between `Method` and `UserOperator`.
         /// </summary>
@@ -193,7 +184,6 @@ namespace Semmle.Extraction.CSharp.Entities
 
         public override void WriteId(EscapingTextWriter trapFile)
         {
-            PrefixGenericCallableId(trapFile, Symbol, OriginalDefinition);
             BuildMethodId(this, trapFile);
         }
 
