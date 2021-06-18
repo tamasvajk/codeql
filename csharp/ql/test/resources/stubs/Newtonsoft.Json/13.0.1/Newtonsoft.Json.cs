@@ -1,7 +1,5 @@
 // This file contains auto-generated code.
 
-using System.Linq;
-
 namespace Newtonsoft
 {
     namespace Json
@@ -10,14 +8,12 @@ namespace Newtonsoft
         public enum ConstructorHandling
         {
             AllowNonPublicDefaultConstructor,
-            // Stub generator skipped constructor
             Default,
         }
 
         // Generated from `Newtonsoft.Json.DateFormatHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
         public enum DateFormatHandling
         {
-            // Stub generator skipped constructor
             IsoDateFormat,
             MicrosoftDateFormat,
         }
@@ -25,7 +21,6 @@ namespace Newtonsoft
         // Generated from `Newtonsoft.Json.DateParseHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
         public enum DateParseHandling
         {
-            // Stub generator skipped constructor
             DateTime,
             DateTimeOffset,
             None,
@@ -34,7 +29,6 @@ namespace Newtonsoft
         // Generated from `Newtonsoft.Json.DateTimeZoneHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
         public enum DateTimeZoneHandling
         {
-            // Stub generator skipped constructor
             Local,
             RoundtripKind,
             Unspecified,
@@ -53,7 +47,6 @@ namespace Newtonsoft
         [System.Flags]
         public enum DefaultValueHandling
         {
-            // Stub generator skipped constructor
             Ignore,
             IgnoreAndPopulate,
             Include,
@@ -64,7 +57,6 @@ namespace Newtonsoft
         public enum FloatFormatHandling
         {
             DefaultValue,
-            // Stub generator skipped constructor
             String,
             Symbol,
         }
@@ -74,13 +66,11 @@ namespace Newtonsoft
         {
             Decimal,
             Double,
-            // Stub generator skipped constructor
         }
 
         // Generated from `Newtonsoft.Json.Formatting` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
         public enum Formatting
         {
-            // Stub generator skipped constructor
             Indented,
             None,
         }
@@ -372,7 +362,6 @@ namespace Newtonsoft
                 PostValue,
                 Property,
                 Start,
-                // Stub generator skipped constructor
             }
 
 
@@ -654,7 +643,6 @@ namespace Newtonsoft
             EndObject,
             Float,
             Integer,
-            // Stub generator skipped constructor
             None,
             Null,
             PropertyName,
@@ -857,7 +845,6 @@ namespace Newtonsoft
         public enum MemberSerialization
         {
             Fields,
-            // Stub generator skipped constructor
             OptIn,
             OptOut,
         }
@@ -867,7 +854,6 @@ namespace Newtonsoft
         {
             Default,
             Ignore,
-            // Stub generator skipped constructor
             ReadAhead,
         }
 
@@ -876,7 +862,6 @@ namespace Newtonsoft
         {
             Error,
             Ignore,
-            // Stub generator skipped constructor
         }
 
         // Generated from `Newtonsoft.Json.NullValueHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
@@ -884,14 +869,12 @@ namespace Newtonsoft
         {
             Ignore,
             Include,
-            // Stub generator skipped constructor
         }
 
         // Generated from `Newtonsoft.Json.ObjectCreationHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
         public enum ObjectCreationHandling
         {
             Auto,
-            // Stub generator skipped constructor
             Replace,
             Reuse,
         }
@@ -904,7 +887,6 @@ namespace Newtonsoft
             Arrays,
             None,
             Objects,
-            // Stub generator skipped constructor
         }
 
         // Generated from `Newtonsoft.Json.ReferenceLoopHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
@@ -912,7 +894,6 @@ namespace Newtonsoft
         {
             Error,
             Ignore,
-            // Stub generator skipped constructor
             Serialize,
         }
 
@@ -923,7 +904,6 @@ namespace Newtonsoft
             Always,
             Default,
             DisallowNull,
-            // Stub generator skipped constructor
         }
 
         // Generated from `Newtonsoft.Json.StringEscapeHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
@@ -932,7 +912,6 @@ namespace Newtonsoft
             Default,
             EscapeHtml,
             EscapeNonAscii,
-            // Stub generator skipped constructor
         }
 
         // Generated from `Newtonsoft.Json.TypeNameAssemblyFormatHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
@@ -940,7 +919,6 @@ namespace Newtonsoft
         {
             Full,
             Simple,
-            // Stub generator skipped constructor
         }
 
         // Generated from `Newtonsoft.Json.TypeNameHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
@@ -952,7 +930,6 @@ namespace Newtonsoft
             Auto,
             None,
             Objects,
-            // Stub generator skipped constructor
         }
 
         // Generated from `Newtonsoft.Json.WriteState` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
@@ -965,7 +942,6 @@ namespace Newtonsoft
             Object,
             Property,
             Start,
-            // Stub generator skipped constructor
         }
 
         namespace Bson
@@ -1209,7 +1185,6 @@ namespace Newtonsoft
             // Generated from `Newtonsoft.Json.Linq.CommentHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
             public enum CommentHandling
             {
-                // Stub generator skipped constructor
                 Ignore,
                 Load,
             }
@@ -1217,7 +1192,6 @@ namespace Newtonsoft
             // Generated from `Newtonsoft.Json.Linq.DuplicatePropertyNameHandling` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
             public enum DuplicatePropertyNameHandling
             {
-                // Stub generator skipped constructor
                 Error,
                 Ignore,
                 Replace,
@@ -1381,7 +1355,7 @@ namespace Newtonsoft
                 public override int GetHashCode() => throw null;
                 public Newtonsoft.Json.Linq.IJEnumerable<Newtonsoft.Json.Linq.JToken> this[object key] { get => throw null; }
                 public JEnumerable(System.Collections.Generic.IEnumerable<T> enumerable) => throw null;
-                // Stub generator skipped constructor
+                // Stub generator skipped constructor 
             }
 
             // Generated from `Newtonsoft.Json.Linq.JObject` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
@@ -1559,78 +1533,78 @@ namespace Newtonsoft
                 public abstract void WriteTo(Newtonsoft.Json.JsonWriter writer, params Newtonsoft.Json.JsonConverter[] converters);
                 public virtual System.Threading.Tasks.Task WriteToAsync(Newtonsoft.Json.JsonWriter writer, System.Threading.CancellationToken cancellationToken, params Newtonsoft.Json.JsonConverter[] converters) => throw null;
                 public System.Threading.Tasks.Task WriteToAsync(Newtonsoft.Json.JsonWriter writer, params Newtonsoft.Json.JsonConverter[] converters) => throw null;
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: explicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
-                // Stub generator skipped operator: implicit conversion
+                public static explicit operator string(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator int?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator int(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator float?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator float(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator double?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator double(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator bool?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator bool(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Uri(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.UInt64?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.UInt64(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.UInt32?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.UInt32(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.UInt16?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.UInt16(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.TimeSpan?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.TimeSpan(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.SByte?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.SByte(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Int64?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Int64(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Int16?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Int16(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Guid?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Guid(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Decimal?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Decimal(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.DateTimeOffset?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.DateTimeOffset(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.DateTime?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.DateTime(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Char?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Char(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Byte[](Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Byte?(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static explicit operator System.Byte(Newtonsoft.Json.Linq.JToken value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(string value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(int? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(int value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(float? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(float value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(double? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(double value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(bool? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(bool value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Uri value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.UInt64? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.UInt64 value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.UInt32? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.UInt32 value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.UInt16? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.UInt16 value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.TimeSpan? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.TimeSpan value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.SByte? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.SByte value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Int64? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Int64 value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Int16? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Int16 value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Guid? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Guid value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Decimal? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Decimal value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.DateTimeOffset? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.DateTimeOffset value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.DateTime? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.DateTime value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Byte[] value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Byte? value) => throw null;
+                public static implicit operator Newtonsoft.Json.Linq.JToken(System.Byte value) => throw null;
             }
 
             // Generated from `Newtonsoft.Json.Linq.JTokenEqualityComparer` in `Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed`
@@ -1666,7 +1640,6 @@ namespace Newtonsoft
                 Float,
                 Guid,
                 Integer,
-                // Stub generator skipped constructor
                 None,
                 Null,
                 Object,
@@ -1804,7 +1777,6 @@ namespace Newtonsoft
             public enum LineInfoHandling
             {
                 Ignore,
-                // Stub generator skipped constructor
                 Load,
             }
 
@@ -1813,7 +1785,6 @@ namespace Newtonsoft
             {
                 Concat,
                 Merge,
-                // Stub generator skipped constructor
                 Replace,
                 Union,
             }
@@ -1824,7 +1795,6 @@ namespace Newtonsoft
             {
                 Ignore,
                 Merge,
-                // Stub generator skipped constructor
             }
 
         }
@@ -1926,7 +1896,6 @@ namespace Newtonsoft
                 Boolean,
                 Float,
                 Integer,
-                // Stub generator skipped constructor
                 None,
                 Null,
                 Object,
@@ -1937,7 +1906,6 @@ namespace Newtonsoft
             public enum UndefinedSchemaIdHandling
             {
                 None,
-                // Stub generator skipped constructor
                 UseAssemblyQualifiedName,
                 UseTypeName,
             }

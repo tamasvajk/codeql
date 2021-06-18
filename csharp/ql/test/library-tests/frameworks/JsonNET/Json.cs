@@ -44,7 +44,7 @@ namespace JsonTest
             Sink(jobject);
             Sink(jobject["1"]);
             Sink(jobject["1"]["2"]);
-            // Sink((string)jobject["1"]["2"]);
+            Sink((string)jobject["1"]["2"]);
 
             // Linq JToken tests
             Sink(jobject.First((JToken i) => true));
