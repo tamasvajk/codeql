@@ -249,7 +249,7 @@ module EntityFramework {
       row =
         [
           "System.Data.Entity;Database;false;SqlQuery;(System.Type,System.String,System.Object[]);;Argument[1];sql",
-          "System.Data.Entity;Database;false;SqlQuery<TElement>;(System.String,System.Object[]);;Argument[0];sql",
+          "System.Data.Entity;Database;false;SqlQuery;(System.String,System.Object[]);;Argument[0];sql",
           "System.Data.Entity;Database;false;ExecuteSqlCommand;(System.String,System.Object[]);;Argument[0];sql",
           "System.Data.Entity;Database;false;ExecuteSqlCommand;(System.Data.Entity.TransactionalBehavior,System.String,System.Object[]);;Argument[1];sql",
           "System.Data.Entity;Database;false;ExecuteSqlCommandAsync;(System.Data.Entity.TransactionalBehavior,System.String,System.Threading.CancellationToken,System.Object[]);;Argument[1];sql",
