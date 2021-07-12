@@ -8,6 +8,13 @@ namespace System.Data
     }
 
     public interface IDbDataAdapter { }
+
+    public enum CommandType
+    {
+        StoredProcedure,
+        TableDirect,
+        Text,
+    }
 }
 
 namespace System.Data.SqlClient
@@ -23,7 +30,7 @@ namespace System.Data.SqlClient
     {
         public SqlDataAdapter() { }
 
-        public SqlDataAdapter(string sql) { }
+        public SqlDataAdapter(string sql, string conn) { }
     }
 }
 
@@ -48,7 +55,7 @@ namespace Microsoft.ApplicationBlocks.Data
 {
     class SqlHelper
     {
-        public static object ExecuteScalar(string connectionString, string commandText) { return null; }
+        public static object ExecuteScalar(string connectionString, System.Data.CommandType ct, string commandText) { return null; }
     }
 }
 
@@ -67,9 +74,9 @@ namespace SqlClientTests
             command = new MySqlCommand(text);
             command.CommandText = text;
             new MySqlCommand(text).CommandText = text;
-            new SqlDataAdapter(text);
+            new SqlDataAdapter(text, "");
             MySqlHelper.ExecuteScalar("", text);
-            SqlHelper.ExecuteScalar("", text);
+            SqlHelper.ExecuteScalar("", System.Data.CommandType.Text, text);
         }
     }
 }
