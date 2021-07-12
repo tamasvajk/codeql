@@ -33,7 +33,7 @@ class Namespace extends Declaration, @namespace {
   override string toString() { result = this.getQualifiedName() }
 
   /** Holds if this is the global namespace. */
-  final predicate isGlobalNamespace() { getName() = "" }
+  predicate isGlobalNamespace() { getUndecoratedName() = "" }
 }
 
 /** The global namespace. */

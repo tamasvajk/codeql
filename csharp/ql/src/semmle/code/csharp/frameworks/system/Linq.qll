@@ -11,7 +11,7 @@ module SystemLinq {
   class Namespace extends csharp::Namespace {
     Namespace() {
       this.getParentNamespace() instanceof System::SystemNamespace and
-      this.hasName("Linq")
+      this.getUndecoratedName() = "Linq"
     }
   }
 

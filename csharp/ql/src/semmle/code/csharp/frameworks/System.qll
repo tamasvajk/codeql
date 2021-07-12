@@ -8,7 +8,7 @@ private import semmle.code.csharp.dataflow.ExternalFlow
 class SystemNamespace extends Namespace {
   SystemNamespace() {
     this.getParentNamespace() instanceof GlobalNamespace and
-    this.hasName("System")
+    this.getUndecoratedName() = "System"
   }
 }
 

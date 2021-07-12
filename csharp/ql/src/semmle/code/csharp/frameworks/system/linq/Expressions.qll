@@ -11,7 +11,7 @@ module SystemLinqExpressions {
   class Namespace extends csharp::Namespace {
     Namespace() {
       this.getParentNamespace() instanceof SystemLinq::Namespace and
-      this.hasName("Expressions")
+      this.getUndecoratedName() = "Expressions"
     }
   }
 
@@ -22,7 +22,7 @@ module SystemLinqExpressions {
 
   /** The `Expression<TDelegate>` class. */
   class ExpressionDelegate extends Class, csharp::UnboundGenericClass {
-    ExpressionDelegate() { this.hasName("Expression<>") }
+    ExpressionDelegate() { types(this, _, "Expression<>") }
   }
 
   /**

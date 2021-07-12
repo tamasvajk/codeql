@@ -129,7 +129,7 @@ class Namespace extends DotNet::Namespace, TypeContainer, Declaration, @namespac
  * The global namespace. This is the root of all namespaces.
  */
 class GlobalNamespace extends Namespace {
-  GlobalNamespace() { this.hasName("") }
+  GlobalNamespace() { this.getUndecoratedName() = "" }
 }
 
 /**

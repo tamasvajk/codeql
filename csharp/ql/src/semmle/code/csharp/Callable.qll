@@ -243,6 +243,8 @@ class Method extends Callable, Virtualizable, Attributable, @method {
   /** Gets the name of this method. */
   override string getName() { methods(this, result, _, _, _) }
 
+  override string getUndecoratedName() { methods(this, result, _, _, _) }
+
   override ValueOrRefType getDeclaringType() { methods(this, _, result, _, _) }
 
   override Type getReturnType() { methods(this, _, _, getTypeRef(result), _) }

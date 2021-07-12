@@ -113,14 +113,16 @@ class ValueOrRefType extends DotNet::ValueOrRefType, Type, Attributable, @value_
   override ValueOrRefType getDeclaringType() { none() }
 
   override string getUndecoratedName() {
-    if this.getName().indexOf("<") > 0
-    then
-      exists(string name, int p |
-        name = this.getName() and p = min(int p2 | p2 = name.indexOf("<") and p2 > 0)
-      |
-        result = name.substring(0, p)
-      )
-    else result = this.getName()
+    exists(string rawTypeName | types(this, _, rawTypeName) |
+      if rawTypeName.indexOf("<") > 0
+      then
+        exists(string name, int p |
+          name = rawTypeName and p = min(int p2 | p2 = name.indexOf("<") and p2 > 0)
+        |
+          result = name.substring(0, p)
+        )
+      else result = rawTypeName
+    )
   }
 
   /** Gets a nested child type, if any. */
@@ -446,9 +448,11 @@ class VoidType extends DotNet::ValueOrRefType, Type, @void_type {
     name = "Void"
   }
 
-  override string getUndecoratedName() { result = "Void" }
+  final override string getName() { result = "Void" }
 
-  override Namespace getDeclaringNamespace() { result.hasQualifiedName("System") }
+  final override string getUndecoratedName() { result = "Void" }
+
+  override Namespace getDeclaringNamespace() { namespaces(result, "System") }
 }
 
 /**
@@ -480,7 +484,7 @@ class SimpleType extends ValueType, @simple_type {
   /** Gets the maximum integral value of this type, if any. */
   int maxValue() { none() }
 
-  override Namespace getDeclaringNamespace() { result.hasQualifiedName("System") }
+  override Namespace getDeclaringNamespace() { result.getUndecoratedName() = "System" }
 }
 
 /**
@@ -1046,7 +1050,11 @@ class PointerType extends DotNet::PointerType, Type, @pointer_type {
 
   override Type getChild(int n) { result = getReferentType() and n = 0 }
 
-  override string getName() { result = DotNet::PointerType.super.getName() }
+  final override string getName() {
+    exists(string name | types(this, _, name) and result = name + "*")
+  }
+
+  final override string getUndecoratedName() { result = getReferentType().getUndecoratedName() }
 
   override Location getALocation() { result = getReferentType().getALocation() }
 

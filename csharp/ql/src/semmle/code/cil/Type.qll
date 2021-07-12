@@ -72,9 +72,9 @@ class Type extends DotNet::Type, Declaration, TypeContainer, @cil_type {
    */
   predicate isSystemType(string name) {
     exists(Namespace system | this.getParent() = system |
-      system.getName() = "System" and
-      system.getParentNamespace() instanceof DotNet::GlobalNamespace and
-      name = this.getName()
+      system.getUndecoratedName() = "System" and
+      system.getParentNamespace().getUndecoratedName() = "" and
+      cil_type(this, name, _, _, _)
     )
   }
 
