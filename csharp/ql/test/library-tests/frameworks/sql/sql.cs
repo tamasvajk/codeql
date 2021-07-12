@@ -1,39 +1,5 @@
 using System;
 
-namespace System.Data
-{
-    public interface IDbCommand
-    {
-        string CommandText { get; set; }
-    }
-
-    public interface IDbDataAdapter { }
-
-    public enum CommandType
-    {
-        StoredProcedure,
-        TableDirect,
-        Text,
-    }
-}
-
-namespace System.Data.SqlClient
-{
-    public class SqlCommand : IDbCommand
-    {
-        public SqlCommand(string commandText) { }
-
-        string IDbCommand.CommandText { get; set; }
-    }
-
-    public class SqlDataAdapter : IDbDataAdapter
-    {
-        public SqlDataAdapter() { }
-
-        public SqlDataAdapter(string sql, string conn) { }
-    }
-}
-
 namespace MySql.Data.MySqlClient
 {
     using System.Data;
@@ -43,6 +9,10 @@ namespace MySql.Data.MySqlClient
         public MySqlCommand(string commandText) { }
 
         public string CommandText { get; set; }
+
+        public IDataReader ExecuteReader() => throw null;
+        public CommandType CommandType { get; set; }
+        public IDataParameterCollection Parameters { get; set; }
     }
 
     public class MySqlHelper
@@ -74,7 +44,7 @@ namespace SqlClientTests
             command = new MySqlCommand(text);
             command.CommandText = text;
             new MySqlCommand(text).CommandText = text;
-            new SqlDataAdapter(text, "");
+            new SqlDataAdapter(text, null);
             MySqlHelper.ExecuteScalar("", text);
             SqlHelper.ExecuteScalar("", System.Data.CommandType.Text, text);
         }
