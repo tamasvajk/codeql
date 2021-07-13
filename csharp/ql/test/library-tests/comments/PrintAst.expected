@@ -97,7 +97,7 @@ comments2.cs:
 #  113|         0: [LocalVariableDeclAndInitExpr] Int32 t2 = ...
 #  113|           -1: [TypeMention] int
 #  113|           0: [LocalVariableAccess] access to local variable t2
-#  113|           1: [MethodCall] call to method GenericFn
+#  113|           1: [MethodCall] call to method GenericFn<Int32>
 #  114|       2: [LocalVariableDeclStmt] ... ...;
 #  114|         0: [LocalVariableDeclAndInitExpr] GenericClass<Double> t3 = ...
 #  114|           -1: [TypeMention] GenericClass<Double>
@@ -109,13 +109,13 @@ comments2.cs:
 #  115|         0: [LocalVariableDeclAndInitExpr] Int32 t4 = ...
 #  115|           -1: [TypeMention] int
 #  115|           0: [LocalVariableAccess] access to local variable t4
-#  115|           1: [MethodCall] call to method GenericFn
+#  115|           1: [MethodCall] call to method GenericFn<Double>
 #  119|   18: [Class] GenericClass<>
 #-----|     1: (Type parameters)
 #  119|       0: [TypeParameter] T
 #  121|     5: [Field] f
 #  121|       -1: [TypeMention] int
-#  125|   21: [Method] GenericFn
+#  125|   21: [Method] GenericFn<>
 #  125|     -1: [TypeMention] int
 #-----|     1: (Type parameters)
 #  125|       0: [TypeParameter] T

@@ -1050,9 +1050,7 @@ class PointerType extends DotNet::PointerType, Type, @pointer_type {
 
   override Type getChild(int n) { result = getReferentType() and n = 0 }
 
-  final override string getName() {
-    exists(string name | types(this, _, name) and result = name + "*")
-  }
+  final override string getName() { types(this, _, result) }
 
   final override string getUndecoratedName() { result = getReferentType().getUndecoratedName() }
 
