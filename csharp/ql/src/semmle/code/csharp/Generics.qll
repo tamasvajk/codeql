@@ -492,7 +492,8 @@ class UnboundGenericMethod extends Method, UnboundGeneric {
 
   override string toStringWithTypes() {
     result =
-      getName() + "<" + this.typeParametersToString() + ">" + "(" + parameterTypesToString() + ")"
+      getUndecoratedName() + "<" + this.typeParametersToString() + ">" + "(" +
+        parameterTypesToString() + ")"
   }
 
   final override string getName() {
