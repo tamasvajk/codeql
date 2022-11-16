@@ -273,7 +273,8 @@ bindingset[kind]
 predicate isRelevantSinkKind(string kind) {
   not kind = "logging" and
   not kind.matches("regex-use%") and
-  not kind = "write-file"
+  not kind = "write-file" and
+  not kind = "create-file"
 }
 
 /**

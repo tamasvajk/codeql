@@ -262,7 +262,7 @@ string captureSource(DataFlowTargetApi api) {
  * This can be used to generate Sink summaries for APIs, if the API propagates a parameter (or enclosing type field)
  * into an existing known sink (then the API itself becomes a sink).
  */
-private class PropagateToSinkConfiguration extends TaintTracking::Configuration {
+class PropagateToSinkConfiguration extends TaintTracking::Configuration {
   PropagateToSinkConfiguration() {
     this = "parameters or fields flowing into sinks" and
     any(ActiveConfiguration ac).activateToSinkConfig()
@@ -270,9 +270,15 @@ private class PropagateToSinkConfiguration extends TaintTracking::Configuration 
 
   override predicate isSource(DataFlow::Node source) { apiSource(source) }
 
-  override predicate isSink(DataFlow::Node sink) { ExternalFlow::sinkNode(sink, _) }
+  override predicate isSink(DataFlow::Node sink) {
+    exists(string s | ExternalFlow::sinkNode(sink, s) and isRelevantSinkKind(s))
+  }
 
   override predicate isSanitizer(DataFlow::Node node) { sinkModelSanitizer(node) }
+
+  override predicate sinkGrouping(DataFlow::Node sink, string sinkGroup) {
+    ExternalFlow::sinkNode(sink, sinkGroup)
+  }
 
   override DataFlow::FlowFeature getAFeature() {
     result instanceof DataFlow::FeatureHasSourceCallContext
@@ -290,4 +296,9 @@ string captureSink(DataFlowTargetApi api) {
     isRelevantSinkKind(kind) and
     result = asSinkModel(api, asInputArgument(src), kind)
   )
+}
+
+bindingset[src, kind]
+string asSinkModelForTest(TargetApiSpecific api, DataFlow::Node src, string kind) {
+  result = asSinkModel(api, asInputArgument(src), kind)
 }
