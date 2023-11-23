@@ -1,0 +1,19 @@
+compilationErrors
+| standalone.cs:40:12:40:12 | CS0104: 'C' is an ambiguous reference between 'A.C' and 'B.C' |
+methodCalls
+| standalone.cs:44:9:44:15 | call to method  |
+| standalone.cs:45:9:45:18 | call to method  |
+| standalone.cs:46:9:46:20 | call to method  |
+| standalone.cs:47:9:47:21 | call to method  |
+| standalone.cs:49:9:49:15 | call to method  |
+| standalone.cs:50:9:50:18 | call to method  |
+| standalone.cs:51:9:51:20 | call to method  |
+| standalone.cs:52:9:52:21 | call to method  |
+| standalone.cs:54:9:54:15 | call to method  |
+| standalone.cs:55:9:55:18 | call to method  |
+| standalone.cs:56:9:56:20 | call to method  |
+| standalone.cs:57:9:57:21 | call to method  |
+| standalone.cs:59:9:59:15 | call to method  |
+methodCallsTargets
+field
+| standalone.cs:40:14:40:14 | c | A.C |
