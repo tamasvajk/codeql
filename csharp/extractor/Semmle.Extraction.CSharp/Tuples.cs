@@ -125,6 +125,9 @@ namespace Semmle.Extraction.CSharp
         internal static void dynamic_member_name(this TextWriter trapFile, Expression e, string name) =>
             trapFile.WriteTuple("dynamic_member_name", e, name);
 
+        internal static void invocation_member_name(this TextWriter trapFile, Expression e, string name) =>
+            trapFile.WriteTuple("invocation_member_name", e, name);
+
         internal static void enum_underlying_type(this TextWriter trapFile, Type @enum, Type type) =>
             trapFile.WriteTuple("enum_underlying_type", @enum, type);
 

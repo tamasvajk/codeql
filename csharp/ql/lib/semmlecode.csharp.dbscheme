@@ -1284,6 +1284,10 @@ dynamic_member_name(
   unique int id: @late_bindable_expr ref,
   string name: string ref);
 
+invocation_member_name(
+  unique int id: @method_invocation_expr ref,
+  string name: string ref);
+
 @qualifiable_expr = @member_access_expr
                   | @method_invocation_expr
                   | @element_access_expr;

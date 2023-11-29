@@ -84,6 +84,13 @@ namespace Semmle.Extraction.CSharp.Entities.Expressions
                 else
                     Context.ModelError(Syntax, "Unable to get name for dynamic call.");
             }
+            else
+            {
+                if (memberName is not null)
+                    trapFile.invocation_member_name(this, memberName);
+                else
+                    Context.ModelError(Syntax, "Unable to get name for call.");
+            }
 
             PopulateArguments(trapFile, Syntax.ArgumentList, child);
 

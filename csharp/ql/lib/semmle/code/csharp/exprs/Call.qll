@@ -237,7 +237,29 @@ class Call extends DotNet::Call, Expr, @call {
  * ```
  */
 class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invocation_expr {
-  override Method getTarget() { expr_call(this, result) }
+  override Method getTarget() {
+    expr_call(this, result)
+    or
+    result = this.getACandidateTarget()
+  }
+
+  private Method getACandidateTarget() {
+    not exists(Method m | expr_call(this, m)) and
+    exists(string name, ValueOrRefType alternativeQualifierType |
+      invocation_member_name(this, name) and
+      alternativeQualifierType =
+        this.getQualifier()
+            .getType()
+            .(ValueOrRefType)
+            .getABaseType*()
+            .getAnAmbiguousAlternativeType*() and
+      // TODO: improve the filtering of candidates below
+      // - check arity
+      // - check argument-parameter assignability
+      // - generics?
+      result = alternativeQualifierType.getAMethod(name)
+    )
+  }
 
   override Method getQualifiedDeclaration() { result = this.getTarget() }
 
@@ -274,7 +296,7 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
  * 6), in order to be properly matched with the parameter `i` on line 2.
  */
 class ExtensionMethodCall extends MethodCall {
-  ExtensionMethodCall() { this.getTarget() instanceof ExtensionMethod }
+  ExtensionMethodCall() { exists(ExtensionMethod em | expr_call(this, em)) }
 
   override TypeAccess getQualifier() { result = this.getChildExpr(-1) }
 
