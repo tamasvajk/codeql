@@ -17,3 +17,6 @@ methodCalls
 methodCallsTargets
 field
 | standalone.cs:40:14:40:14 | c | A.C |
+ambiguousAlternativeTypes
+| standalone.cs:14:18:14:18 | C | standalone.cs:27:18:27:18 | C |
+| standalone.cs:27:18:27:18 | C | standalone.cs:14:18:14:18 | C |

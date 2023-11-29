@@ -10,3 +10,7 @@ query predicate methodCallsTargets(MethodCall mc, Method m) { mc.getTarget() = m
 query predicate field(Field f, string t) {
   f.getType().getFullyQualifiedName() = t and f.fromSource()
 }
+
+query predicate ambiguousAlternativeTypes(Type t, Type alternative) {
+  t.getAnAmbiguousAlternativeType() = alternative
+}

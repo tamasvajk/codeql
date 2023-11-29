@@ -593,6 +593,17 @@ type_nullability(int id: @has_type_annotation ref, int nullability: @nullability
  */
 expr_flowstate(unique int id: @expr ref, int state: int ref);
 
+type_ambiguity_groups(
+  unique int group_id: @type_ambiguity_group,
+  int reason: int ref
+);
+
+#keyset[group_id, type_id]
+type_ambiguity_group_candidates(
+  int group_id: @type_ambiguity_group ref,
+  int type_id: @type_or_ref ref
+);
+
 /** GENERICS **/
 
 @generic = @type | @method | @local_function;
