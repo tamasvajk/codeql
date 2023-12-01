@@ -265,7 +265,9 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
           this.isParameterArgumentAssignable(result, p, arg)
         )
         or
-        p.hasDefaultValue()
+        p.hasDefaultValue() // call to `M(int p = 1)` might not have any arguments
+        or
+        p.isParams() // call to `M(params int[] p)` might not have any arguments
       )
     ) and
     // Make sure all arguments have a corresponding parameter.
