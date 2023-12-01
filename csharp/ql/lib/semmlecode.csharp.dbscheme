@@ -1285,7 +1285,7 @@ dynamic_member_name(
   string name: string ref);
 
 invocation_member_name(
-  unique int id: @method_invocation_expr ref,
+  unique int id: @call ref,
   string name: string ref);
 
 @qualifiable_expr = @member_access_expr
