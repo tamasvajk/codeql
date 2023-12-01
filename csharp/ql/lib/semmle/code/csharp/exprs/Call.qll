@@ -59,13 +59,16 @@ class Call extends DotNet::Call, Expr, @call {
    * consider default arguments.
    */
   cached
-  override Expr getArgumentForParameter(DotNet::Parameter p) {
-    this.getTarget().getAParameter() = p and
+  final override Expr getArgumentForParameter(DotNet::Parameter p) {
+    result = this.getArgumentForParameterInternal(this.getTarget(), p)
+  }
+
+  /** INTERNAL: Do not use. */
+  Expr getArgumentForParameterInternal(Callable c, DotNet::Parameter p) {
+    c.getAParameter() = p and
     (
-      // Appears in the positional part of the call
       result = this.getImplicitArgument(p)
       or
-      // Appears in the named part of the call
       result = this.getExplicitArgument(p.getName())
     )
   }
@@ -253,11 +256,34 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
             .(ValueOrRefType)
             .getABaseType*()
             .getAnAmbiguousAlternativeType*() and
-      // TODO: improve the filtering of candidates below
-      // - check arity
-      // - check argument-parameter assignability
-      // - generics?
-      result = alternativeQualifierType.getAMethod(name)
+      result = alternativeQualifierType.getAMethod(name) and
+      // todo: enable the same logic for extension methods too.
+      not result.isExtensionMethod() and
+      // Make sure all parameters have a corresponding argument.
+      forall(Parameter p | result.getAParameter() = p |
+        exists(Expr arg | arg = this.getAnArgument() |
+          this.isParameterArgumentAssignable(result, p, arg)
+        )
+        or
+        p.hasDefaultValue()
+      )
+    ) and
+    // Make sure all arguments have a corresponding parameter.
+    forall(Expr arg | this.getAnArgument() = arg |
+      exists(Parameter p | result.getAParameter() = p |
+        this.isParameterArgumentAssignable(result, p, arg)
+      )
+    )
+  }
+
+  private predicate isParameterArgumentAssignable(Callable c, Parameter p, Expr arg) {
+    arg = this.getArgumentForParameterInternal(c, p) and
+    (
+      not p.isParams() and
+      arg.getType().isImplicitlyConvertibleTo(p.getType())
+      or
+      p.isParams() and
+      arg.getType().isImplicitlyConvertibleTo(p.getType().(ArrayType).getElementType())
     )
   }
 
