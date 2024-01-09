@@ -260,6 +260,13 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
           qualifierType.getABaseType*().getAnAmbiguousAlternativeType()
         ] and
       result = alternativeQualifierType.getAMethod(name) and
+      (
+        result.isStatic() and
+        this.getQualifier() instanceof TypeAccess
+        or
+        not result.isStatic() and
+        not this.getQualifier() instanceof TypeAccess
+      ) and
       // todo: enable the same logic for extension methods too.
       not result.isExtensionMethod() and
       // Make sure all parameters have a corresponding argument.

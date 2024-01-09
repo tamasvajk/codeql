@@ -54,8 +54,6 @@ methodCallsTargets
 | standalone.cs:65:9:65:31 | call to method M1 | standalone.cs:19:21:19:22 | M1 |
 | standalone.cs:66:9:66:31 | call to method M2 | standalone.cs:35:21:35:22 | M2 |
 | standalone.cs:68:9:68:15 | call to method M4 | standalone.cs:23:28:23:29 | M4 |
-| standalone.cs:68:9:68:15 | call to method M4 | standalone.cs:24:21:24:22 | M4 |
-| standalone.cs:69:9:69:15 | call to method M4 | standalone.cs:23:28:23:29 | M4 |
 | standalone.cs:69:9:69:15 | call to method M4 | standalone.cs:24:21:24:22 | M4 |
 field
 | standalone.cs:43:14:43:14 | c | A.C |
