@@ -19,6 +19,9 @@ namespace A
         public void M1(string s, params int[] i) { }
 
         public void M3(string s) { }
+
+        public static void M4(string s) { }
+        public void M4(string s, int i = 5) { }
     }
 }
 
@@ -61,6 +64,9 @@ public class D
         c.M0(s, new[] { 1, 2 });
         c.M1(s, new[] { 1, 2 });
         c.M2(s, new[] { 1, 2 });
+
+        C.M4(s);
+        c.M4(s);
     }
 
     private static void Main()
