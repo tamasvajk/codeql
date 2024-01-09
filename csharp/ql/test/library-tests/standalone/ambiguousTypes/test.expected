@@ -14,6 +14,9 @@ methodCalls
 | standalone.cs:56:9:56:20 | call to method M2 |
 | standalone.cs:57:9:57:21 | call to method M2 |
 | standalone.cs:59:9:59:15 | call to method M3 |
+| standalone.cs:61:9:61:31 | call to method  |
+| standalone.cs:62:9:62:31 | call to method  |
+| standalone.cs:63:9:63:31 | call to method  |
 methodCallsTargets
 | standalone.cs:44:9:44:15 | call to method M0 | standalone.cs:8:21:8:22 | M0 |
 | standalone.cs:44:9:44:15 | call to method M0 | standalone.cs:9:21:9:22 | M0 |

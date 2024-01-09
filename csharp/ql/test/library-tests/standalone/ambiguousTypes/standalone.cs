@@ -57,6 +57,10 @@ public class D
         c.M2(s, 1, 2);
 
         c.M3(s);
+
+        c.M0(s, new[] { 1, 2 });
+        c.M1(s, new[] { 1, 2 });
+        c.M2(s, new[] { 1, 2 });
     }
 
     private static void Main()
