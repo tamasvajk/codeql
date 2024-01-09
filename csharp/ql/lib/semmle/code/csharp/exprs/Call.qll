@@ -249,7 +249,10 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
   private Method getACandidateTarget() {
     not exists(Method m | expr_call(this, m)) and
     exists(string name, ValueOrRefType alternativeQualifierType, ValueOrRefType qualifierType |
-      invocation_member_name(this, name) and
+      (
+        invocation_member_name(this, name) or
+        dynamic_member_name(this, name)
+      ) and
       qualifierType = this.getQualifier().getType() and
       alternativeQualifierType =
         [
