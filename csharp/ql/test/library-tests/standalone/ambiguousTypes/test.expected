@@ -14,9 +14,9 @@ methodCalls
 | standalone.cs:56:9:56:20 | call to method M2 |
 | standalone.cs:57:9:57:21 | call to method M2 |
 | standalone.cs:59:9:59:15 | call to method M3 |
-| standalone.cs:61:9:61:31 | call to method  |
-| standalone.cs:62:9:62:31 | call to method  |
-| standalone.cs:63:9:63:31 | call to method  |
+| standalone.cs:61:9:61:31 | call to method M0 |
+| standalone.cs:62:9:62:31 | call to method M1 |
+| standalone.cs:63:9:63:31 | call to method M2 |
 methodCallsTargets
 | standalone.cs:44:9:44:15 | call to method M0 | standalone.cs:8:21:8:22 | M0 |
 | standalone.cs:44:9:44:15 | call to method M0 | standalone.cs:9:21:9:22 | M0 |
@@ -47,6 +47,9 @@ methodCallsTargets
 | standalone.cs:57:9:57:21 | call to method M2 | standalone.cs:32:21:32:22 | M2 |
 | standalone.cs:59:9:59:15 | call to method M3 | standalone.cs:21:21:21:22 | M3 |
 | standalone.cs:59:9:59:15 | call to method M3 | standalone.cs:34:21:34:22 | M3 |
+| standalone.cs:61:9:61:31 | call to method M0 | standalone.cs:11:21:11:22 | M0 |
+| standalone.cs:62:9:62:31 | call to method M1 | standalone.cs:19:21:19:22 | M1 |
+| standalone.cs:63:9:63:31 | call to method M2 | standalone.cs:32:21:32:22 | M2 |
 field
 | standalone.cs:40:14:40:14 | c | A.C |
 ambiguousAlternativeTypes

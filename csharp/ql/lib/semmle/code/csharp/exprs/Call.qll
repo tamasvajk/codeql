@@ -288,7 +288,10 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
       arg.getType().isImplicitlyConvertibleTo(p.getType())
       or
       p.isParams() and
-      arg.getType().isImplicitlyConvertibleTo(p.getType().(ArrayType).getElementType())
+      (
+        arg.getType().isImplicitlyConvertibleTo(p.getType().(ArrayType).getElementType()) or
+        arg.getType().isImplicitlyConvertibleTo(p.getType())
+      )
     )
   }
 
