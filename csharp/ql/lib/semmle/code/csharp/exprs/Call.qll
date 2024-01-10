@@ -65,16 +65,15 @@ class Call extends DotNet::Call, Expr, @call {
 
   /** INTERNAL: Do not use. */
   Expr getArgumentForParameterInternal(Callable c, DotNet::Parameter p) {
+    result = this.getImplicitArgument(c, p)
+    or
     c.getAParameter() = p and
-    (
-      result = this.getImplicitArgument(p)
-      or
-      result = this.getExplicitArgument(p.getName())
-    )
+    result = this.getExplicitArgument(p.getName())
   }
 
   pragma[noinline]
-  private Expr getImplicitArgument(DotNet::Parameter p) {
+  private Expr getImplicitArgument(Callable c, DotNet::Parameter p) {
+    c.getAParameter() = p and
     not exists(result.getExplicitArgumentName()) and
     (
       p.(Parameter).isParams() and
@@ -289,6 +288,7 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
   }
 
   private predicate isParameterArgumentAssignable(Callable c, Parameter p, Expr arg) {
+    not exists(Method m | expr_call(this, m)) and
     arg = this.getArgumentForParameterInternal(c, p) and
     (
       not p.isParams() and
