@@ -82,6 +82,7 @@ class Call extends DotNet::Call, Expr, @call {
     )
   }
 
+  /** INTERNAL: Do not use. */
   pragma[nomagic]
   Expr getExplicitArgument(string name) {
     result = this.getAnArgument() and
