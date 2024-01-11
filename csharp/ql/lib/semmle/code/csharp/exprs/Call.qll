@@ -59,21 +59,19 @@ class Call extends DotNet::Call, Expr, @call {
    * consider default arguments.
    */
   cached
-  final override Expr getArgumentForParameter(DotNet::Parameter p) {
-    result = this.getArgumentForParameterInternal(this.getTarget(), p)
-  }
-
-  /** INTERNAL: Do not use. */
-  Expr getArgumentForParameterInternal(Callable c, DotNet::Parameter p) {
-    result = this.getImplicitArgument(c, p)
-    or
-    c.getAParameter() = p and
-    result = this.getExplicitArgument(p.getName())
+  override Expr getArgumentForParameter(DotNet::Parameter p) {
+    this.getTarget().getAParameter() = p and
+    (
+      // Appears in the positional part of the call
+      result = this.getImplicitArgument(p)
+      or
+      // Appears in the named part of the call
+      result = this.getExplicitArgument(p.getName())
+    )
   }
 
   pragma[noinline]
-  private Expr getImplicitArgument(Callable c, DotNet::Parameter p) {
-    c.getAParameter() = p and
+  private Expr getImplicitArgument(DotNet::Parameter p) {
     not exists(result.getExplicitArgumentName()) and
     (
       p.(Parameter).isParams() and
@@ -85,7 +83,7 @@ class Call extends DotNet::Call, Expr, @call {
   }
 
   pragma[nomagic]
-  private Expr getExplicitArgument(string name) {
+  Expr getExplicitArgument(string name) {
     result = this.getAnArgument() and
     result.getExplicitArgumentName() = name
   }
@@ -245,13 +243,15 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
     result = this.getACandidateTarget()
   }
 
+  private string getCallName() {
+    invocation_member_name(this, result) or
+    dynamic_member_name(this, result)
+  }
+
   private Method getACandidateTarget() {
     not exists(Method m | expr_call(this, m)) and
     exists(string name, ValueOrRefType alternativeQualifierType, ValueOrRefType qualifierType |
-      (
-        invocation_member_name(this, name) or
-        dynamic_member_name(this, name)
-      ) and
+      name = this.getCallName() and
       qualifierType = this.getQualifier().getType() and
       alternativeQualifierType =
         [
@@ -287,8 +287,33 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
     )
   }
 
-  private predicate isParameterArgumentAssignable(Callable c, Parameter p, Expr arg) {
+  private predicate isViableCandidateCallTarget(Callable c) {
     not exists(Method m | expr_call(this, m)) and
+    c.hasName(this.getCallName())
+  }
+
+  private Expr getImplicitArgument(Callable c, DotNet::Parameter p) {
+    this.isViableCandidateCallTarget(c) and
+    c.getAParameter() = p and
+    not exists(result.getExplicitArgumentName()) and
+    (
+      p.(Parameter).isParams() and
+      result = this.getArgument(any(int i | i >= p.getPosition()))
+      or
+      not p.(Parameter).isParams() and
+      result = this.getArgument(p.getPosition())
+    )
+  }
+
+  private Expr getArgumentForParameterInternal(Callable c, DotNet::Parameter p) {
+    result = this.getImplicitArgument(c, p)
+    or
+    c.getAParameter() = p and
+    result = this.getExplicitArgument(p.getName())
+  }
+
+  private predicate isParameterArgumentAssignable(Callable c, Parameter p, Expr arg) {
+    this.isViableCandidateCallTarget(c) and
     arg = this.getArgumentForParameterInternal(c, p) and
     (
       not p.isParams() and
