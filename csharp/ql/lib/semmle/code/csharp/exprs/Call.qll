@@ -250,35 +250,23 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
   }
 
   private Method getACandidateTarget() {
-    not exists(Method m | expr_call(this, m)) and
-    exists(string name, ValueOrRefType alternativeQualifierType, ValueOrRefType qualifierType |
-      name = this.getCallName() and
-      qualifierType = this.getQualifier().getType() and
-      alternativeQualifierType =
-        [
-          qualifierType.getABaseType*(),
-          qualifierType.getABaseType*().getAnAmbiguousAlternativeType()
-        ] and
-      result = alternativeQualifierType.getAMethod(name) and
-      (
-        result.isStatic() and
-        this.getQualifier() instanceof TypeAccess
-        or
-        not result.isStatic() and
-        not this.getQualifier() instanceof TypeAccess
-      ) and
-      // todo: enable the same logic for extension methods too.
-      not result.isExtensionMethod() and
-      // Make sure all parameters have a corresponding argument.
-      forall(Parameter p | result.getAParameter() = p |
-        exists(Expr arg | arg = this.getAnArgument() |
-          this.isParameterArgumentAssignable(result, p, arg)
-        )
-        or
-        p.hasDefaultValue() // call to `M(int p = 1)` might not have any arguments
-        or
-        p.isParams() // call to `M(params int[] p)` might not have any arguments
+    result = this.getViableCandidateCallTarget() and
+    (
+      result.isStatic() and
+      this.getQualifier() instanceof TypeAccess
+      or
+      not result.isStatic() and
+      not this.getQualifier() instanceof TypeAccess
+    ) and
+    // Make sure all parameters have a corresponding argument.
+    forall(Parameter p | result.getAParameter() = p |
+      exists(Expr arg | arg = this.getAnArgument() |
+        this.isParameterArgumentAssignable(result, p, arg)
       )
+      or
+      p.hasDefaultValue() // call to `M(int p = 1)` might not have any arguments
+      or
+      p.isParams() // call to `M(params int[] p)` might not have any arguments
     ) and
     // Make sure all arguments have a corresponding parameter.
     forall(Expr arg | this.getAnArgument() = arg |
@@ -288,9 +276,31 @@ class MethodCall extends Call, QualifiableExpr, LateBindableExpr, @method_invoca
     )
   }
 
-  private predicate isViableCandidateCallTarget(Callable c) {
+  private ValueOrRefType getAlternativeQualifierType() {
+    exists(ValueOrRefType qualifierType |
+      qualifierType = this.getQualifier().getType() and
+      result =
+        [
+          qualifierType.getABaseType*(),
+          qualifierType.getABaseType*().getAnAmbiguousAlternativeType()
+        ]
+    )
+  }
+
+  private Method getViableCandidateCallTarget() {
+    this.isViableCandidateCallTarget(result) and
+    exists(string name, ValueOrRefType alternativeQualifierType |
+      name = this.getCallName() and
+      alternativeQualifierType = this.getAlternativeQualifierType() and
+      result = alternativeQualifierType.getAMethod(name)
+    )
+  }
+
+  private predicate isViableCandidateCallTarget(Method candidate) {
     not exists(Method m | expr_call(this, m)) and
-    c.hasName(this.getCallName())
+    candidate.hasName(this.getCallName()) and
+    // todo: enable the same logic for extension methods too.
+    not candidate.isExtensionMethod()
   }
 
   private Expr getImplicitArgument(Callable c, DotNet::Parameter p) {
